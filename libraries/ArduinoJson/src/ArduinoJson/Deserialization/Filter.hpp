@@ -1,5 +1,5 @@
-// ArduinoJson - arduinojson.org
-// Copyright Benoit Blanchon 2014-2020
+// ArduinoJson - https://arduinojson.org
+// Copyright © 2014-2022, Benoit BLANCHON
 // MIT License
 
 #pragma once
@@ -10,18 +10,18 @@ namespace ARDUINOJSON_NAMESPACE {
 
 class Filter {
  public:
-  explicit Filter(VariantConstRef v) : _variant(v) {}
+  explicit Filter(JsonVariantConst v) : _variant(v) {}
 
   bool allow() const {
     return _variant;
   }
 
   bool allowArray() const {
-    return _variant == true || _variant.is<ArrayRef>();
+    return _variant == true || _variant.is<JsonArrayConst>();
   }
 
   bool allowObject() const {
-    return _variant == true || _variant.is<ObjectRef>();
+    return _variant == true || _variant.is<JsonObjectConst>();
   }
 
   bool allowValue() const {
@@ -32,12 +32,12 @@ class Filter {
   Filter operator[](const TKey& key) const {
     if (_variant == true)  // "true" means "allow recursively"
       return *this;
-    else
-      return Filter(_variant[key] | _variant["*"]);
+    JsonVariantConst member = _variant[key];
+    return Filter(member.isNull() ? _variant["*"] : member);
   }
 
  private:
-  VariantConstRef _variant;
+  JsonVariantConst _variant;
 };
 
 struct AllowAllFilter {

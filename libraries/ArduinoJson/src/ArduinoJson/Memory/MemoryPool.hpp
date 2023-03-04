@@ -1,5 +1,5 @@
-// ArduinoJson - arduinojson.org
-// Copyright Benoit Blanchon 2014-2020
+// ArduinoJson - https://arduinojson.org
+// Copyright © 2014-2022, Benoit BLANCHON
 // MIT License
 
 #pragma once
@@ -7,11 +7,22 @@
 #include <ArduinoJson/Memory/Alignment.hpp>
 #include <ArduinoJson/Polyfills/assert.hpp>
 #include <ArduinoJson/Polyfills/mpl/max.hpp>
+#include <ArduinoJson/Strings/StringAdapters.hpp>
 #include <ArduinoJson/Variant/VariantSlot.hpp>
 
 #include <string.h>  // memmove
 
 #define JSON_STRING_SIZE(SIZE) (SIZE + 1)
+
+// Computes the size required to store an array in a JsonDocument.
+// https://arduinojson.org/v6/how-to/determine-the-capacity-of-the-jsondocument/
+#define JSON_ARRAY_SIZE(NUMBER_OF_ELEMENTS) \
+  ((NUMBER_OF_ELEMENTS) * sizeof(ARDUINOJSON_NAMESPACE::VariantSlot))
+
+// Returns the size (in bytes) of an object with n elements.
+// Can be very handy to determine the size of a StaticMemoryPool.
+#define JSON_OBJECT_SIZE(NUMBER_OF_ELEMENTS) \
+  ((NUMBER_OF_ELEMENTS) * sizeof(ARDUINOJSON_NAMESPACE::VariantSlot))
 
 namespace ARDUINOJSON_NAMESPACE {
 
@@ -37,7 +48,8 @@ class MemoryPool {
   }
 
   void* buffer() {
-    return _begin;
+    return _begin;  // NOLINT(clang-analyzer-unix.Malloc)
+                    // movePointers() alters this pointer
   }
 
   // Gets the capacity of the memoryPool in bytes
@@ -58,12 +70,12 @@ class MemoryPool {
   }
 
   template <typename TAdaptedString>
-  const char* saveString(const TAdaptedString& str) {
+  const char* saveString(TAdaptedString str) {
     if (str.isNull())
       return 0;
 
 #if ARDUINOJSON_ENABLE_STRING_DEDUPLICATION
-    const char* existingCopy = findString(str.begin());
+    const char* existingCopy = findString(str);
     if (existingCopy)
       return existingCopy;
 #endif
@@ -72,7 +84,7 @@ class MemoryPool {
 
     char* newCopy = allocString(n + 1);
     if (newCopy) {
-      str.copyTo(newCopy, n);
+      stringGetChars(str, newCopy, n);
       newCopy[n] = 0;  // force null-terminator
     }
     return newCopy;
@@ -85,13 +97,14 @@ class MemoryPool {
 
   const char* saveStringFromFreeZone(size_t len) {
 #if ARDUINOJSON_ENABLE_STRING_DEDUPLICATION
-    const char* dup = findString(_left);
+    const char* dup = findString(adaptString(_left, len));
     if (dup)
       return dup;
 #endif
 
     const char* str = _left;
     _left += len;
+    *_left++ = 0;
     checkInvariants();
     return str;
   }
@@ -162,19 +175,16 @@ class MemoryPool {
   }
 
 #if ARDUINOJSON_ENABLE_STRING_DEDUPLICATION
-  template <typename TIterator>
-  const char* findString(TIterator str) {
-    for (char* next = _begin; next < _left; ++next) {
-      char* begin = next;
-
-      // try to match
-      for (TIterator it = str; *it == *next; ++it) {
-        if (*next++ == 0)
-          return begin;
-      }
+  template <typename TAdaptedString>
+  const char* findString(const TAdaptedString& str) const {
+    size_t n = str.size();
+    for (char* next = _begin; next + n < _left; ++next) {
+      if (next[n] == '\0' && stringEquals(str, adaptString(next, n)))
+        return next;
 
       // jump to next terminator
-      while (*next) ++next;
+      while (*next)
+        ++next;
     }
     return 0;
   }
@@ -208,5 +218,36 @@ class MemoryPool {
   char *_begin, *_left, *_right, *_end;
   bool _overflowed;
 };
+
+template <typename TAdaptedString, typename TCallback>
+bool storeString(MemoryPool* pool, TAdaptedString str,
+                 StringStoragePolicy::Copy, TCallback callback) {
+  const char* copy = pool->saveString(str);
+  JsonString storedString(copy, str.size(), JsonString::Copied);
+  callback(storedString);
+  return copy != 0;
+}
+
+template <typename TAdaptedString, typename TCallback>
+bool storeString(MemoryPool*, TAdaptedString str, StringStoragePolicy::Link,
+                 TCallback callback) {
+  JsonString storedString(str.data(), str.size(), JsonString::Linked);
+  callback(storedString);
+  return !str.isNull();
+}
+
+template <typename TAdaptedString, typename TCallback>
+bool storeString(MemoryPool* pool, TAdaptedString str,
+                 StringStoragePolicy::LinkOrCopy policy, TCallback callback) {
+  if (policy.link)
+    return storeString(pool, str, StringStoragePolicy::Link(), callback);
+  else
+    return storeString(pool, str, StringStoragePolicy::Copy(), callback);
+}
+
+template <typename TAdaptedString, typename TCallback>
+bool storeString(MemoryPool* pool, TAdaptedString str, TCallback callback) {
+  return storeString(pool, str, str.storagePolicy(), callback);
+}
 
 }  // namespace ARDUINOJSON_NAMESPACE

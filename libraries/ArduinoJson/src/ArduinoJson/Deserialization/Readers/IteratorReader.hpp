@@ -1,5 +1,5 @@
-// ArduinoJson - arduinojson.org
-// Copyright Benoit Blanchon 2014-2020
+// ArduinoJson - https://arduinojson.org
+// Copyright © 2014-2022, Benoit BLANCHON
 // MIT License
 
 #pragma once
@@ -23,7 +23,8 @@ class IteratorReader {
 
   size_t readBytes(char* buffer, size_t length) {
     size_t i = 0;
-    while (i < length && _ptr < _end) buffer[i++] = *_ptr++;
+    while (i < length && _ptr < _end)
+      buffer[i++] = *_ptr++;
     return i;
   }
 };

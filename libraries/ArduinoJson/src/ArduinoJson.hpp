@@ -1,33 +1,40 @@
-// ArduinoJson - arduinojson.org
-// Copyright Benoit Blanchon 2014-2020
+// ArduinoJson - https://arduinojson.org
+// Copyright © 2014-2022, Benoit BLANCHON
 // MIT License
 
 #pragma once
 
 #include "ArduinoJson/Configuration.hpp"
 
-#if !ARDUINOJSON_DEBUG
-#ifdef __clang__
-#pragma clang system_header
-#elif defined __GNUC__
-#pragma GCC system_header
-#endif
+// Include Arduino.h before stdlib.h to avoid conflict with atexit()
+// https://github.com/bblanchon/ArduinoJson/pull/1693#issuecomment-1001060240
+#if ARDUINOJSON_ENABLE_ARDUINO_STRING || ARDUINOJSON_ENABLE_ARDUINO_STREAM || \
+    ARDUINOJSON_ENABLE_ARDUINO_PRINT || ARDUINOJSON_ENABLE_PROGMEM
+#  include <Arduino.h>
 #endif
 
-#include "ArduinoJson/Array/ArrayRef.hpp"
-#include "ArduinoJson/Object/ObjectRef.hpp"
-#include "ArduinoJson/Variant/VariantRef.hpp"
+#if !ARDUINOJSON_DEBUG
+#  ifdef __clang__
+#    pragma clang system_header
+#  elif defined __GNUC__
+#    pragma GCC system_header
+#  endif
+#endif
+
+#include "ArduinoJson/Array/JsonArray.hpp"
+#include "ArduinoJson/Object/JsonObject.hpp"
+#include "ArduinoJson/Variant/JsonVariantConst.hpp"
 
 #include "ArduinoJson/Document/DynamicJsonDocument.hpp"
 #include "ArduinoJson/Document/StaticJsonDocument.hpp"
 
-#include "ArduinoJson/Array/ArrayImpl.hpp"
 #include "ArduinoJson/Array/ElementProxy.hpp"
+#include "ArduinoJson/Array/JsonArrayImpl.hpp"
 #include "ArduinoJson/Array/Utilities.hpp"
 #include "ArduinoJson/Collection/CollectionImpl.hpp"
+#include "ArduinoJson/Object/JsonObjectImpl.hpp"
 #include "ArduinoJson/Object/MemberProxy.hpp"
-#include "ArduinoJson/Object/ObjectImpl.hpp"
-#include "ArduinoJson/Variant/VariantAsImpl.hpp"
+#include "ArduinoJson/Variant/ConverterImpl.hpp"
 #include "ArduinoJson/Variant/VariantCompare.hpp"
 #include "ArduinoJson/Variant/VariantImpl.hpp"
 
@@ -40,25 +47,25 @@
 #include "ArduinoJson/compatibility.hpp"
 
 namespace ArduinoJson {
-typedef ARDUINOJSON_NAMESPACE::ArrayConstRef JsonArrayConst;
-typedef ARDUINOJSON_NAMESPACE::ArrayRef JsonArray;
-typedef ARDUINOJSON_NAMESPACE::Float JsonFloat;
-typedef ARDUINOJSON_NAMESPACE::Integer JsonInteger;
-typedef ARDUINOJSON_NAMESPACE::ObjectConstRef JsonObjectConst;
-typedef ARDUINOJSON_NAMESPACE::ObjectRef JsonObject;
-typedef ARDUINOJSON_NAMESPACE::Pair JsonPair;
-typedef ARDUINOJSON_NAMESPACE::PairConst JsonPairConst;
-typedef ARDUINOJSON_NAMESPACE::String JsonString;
-typedef ARDUINOJSON_NAMESPACE::UInt JsonUInt;
-typedef ARDUINOJSON_NAMESPACE::VariantConstRef JsonVariantConst;
-typedef ARDUINOJSON_NAMESPACE::VariantRef JsonVariant;
 using ARDUINOJSON_NAMESPACE::BasicJsonDocument;
 using ARDUINOJSON_NAMESPACE::copyArray;
 using ARDUINOJSON_NAMESPACE::DeserializationError;
 using ARDUINOJSON_NAMESPACE::deserializeJson;
 using ARDUINOJSON_NAMESPACE::deserializeMsgPack;
 using ARDUINOJSON_NAMESPACE::DynamicJsonDocument;
+using ARDUINOJSON_NAMESPACE::JsonArray;
+using ARDUINOJSON_NAMESPACE::JsonArrayConst;
 using ARDUINOJSON_NAMESPACE::JsonDocument;
+using ARDUINOJSON_NAMESPACE::JsonFloat;
+using ARDUINOJSON_NAMESPACE::JsonInteger;
+using ARDUINOJSON_NAMESPACE::JsonObject;
+using ARDUINOJSON_NAMESPACE::JsonObjectConst;
+using ARDUINOJSON_NAMESPACE::JsonPair;
+using ARDUINOJSON_NAMESPACE::JsonPairConst;
+using ARDUINOJSON_NAMESPACE::JsonString;
+using ARDUINOJSON_NAMESPACE::JsonUInt;
+using ARDUINOJSON_NAMESPACE::JsonVariant;
+using ARDUINOJSON_NAMESPACE::JsonVariantConst;
 using ARDUINOJSON_NAMESPACE::measureJson;
 using ARDUINOJSON_NAMESPACE::serialized;
 using ARDUINOJSON_NAMESPACE::serializeJson;

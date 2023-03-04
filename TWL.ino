@@ -1,4 +1,4 @@
-#include <ESP8266WiFi.h>          // https://github.com/esp8266/Arduino (2.7.4)
+#include <ESP8266WiFi.h>          // https://github.com/esp8266/Arduino (3.1.1)
 #include <ESP8266HTTPClient.h>    // https://github.com/esp8266/Arduino
 #include <ESP8266httpUpdate.h>    // https://github.com/esp8266/Arduino
 #include <WiFiUdp.h>              // https://github.com/esp8266/Arduino

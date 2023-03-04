@@ -1,5 +1,5 @@
-// ArduinoJson - arduinojson.org
-// Copyright Benoit Blanchon 2014-2020
+// ArduinoJson - https://arduinojson.org
+// Copyright © 2014-2022, Benoit BLANCHON
 // MIT License
 
 #pragma once
@@ -32,7 +32,8 @@ struct Reader<TSource*,
   }
 
   size_t readBytes(char* buffer, size_t length) {
-    for (size_t i = 0; i < length; i++) buffer[i] = *_ptr++;
+    for (size_t i = 0; i < length; i++)
+      buffer[i] = *_ptr++;
     return length;
   }
 };
