@@ -157,32 +157,6 @@ int bufferReadAndSend(String filename) {
     return -1;
 }
 
-// LEDs functions
-void tickInternal() {
-    int stateIntervalLed = digitalRead(LED_BUILTIN);
-    digitalWrite(LED_BUILTIN, !stateIntervalLed);
-}
-
-void tickExternal(int mode) {
-    int stateExternalLed = 0;
-    switch (mode) {
-        case MAIN_MODE_NORMAL:
-        case MAIN_MODE_OFFLINE:
-        case MAIN_MODE_FAIL:
-            stateExternalLed = digitalRead(LED_EXTERNAL);
-            digitalWrite(LED_EXTERNAL, !stateExternalLed);
-            break;
-        default:
-            stateExternalLed = digitalRead(LED_EXTERNAL);
-            digitalWrite(LED_EXTERNAL, !stateExternalLed);
-    }
-}
-
-void tickOffAll() {
-    ticker1.detach();
-    ticker2.detach();
-}
-
 // https://stackoverflow.com/questions/9072320/split-string-into-string-array
 String getValue(String data, char separator, int index) {
     int found = 0;

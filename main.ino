@@ -38,24 +38,7 @@ void loop() {
       http.setUserAgent(deviceName);
       http.setTimeout(5000);
 
-  //    String getData =
-  //            "token=" + TOKEN + "&" +
-  //            "id=1";
       int httpCode = http.GET();
-  //    if (!first && httpCode < 0) {
-  //        NO_SERVER = true;
-  //        return false;
-  //    } else {
-  //        if (httpCode != HTTP_CODE_OK && !CHIP_TEST) {
-  //            ticker1.attach_ms(200, tickInternal);
-  //            ticker2.attach_ms(500, tickExternal, MAIN_MODE_OFFLINE);
-  //            Serial.println("Failed to initialize the device using the server");
-  //            Serial.println(httpCode);
-  //            delay(15000);
-  //            ESP.restart();
-  //            return false;
-  //        }
-  //    }
       Serial.println("HTTP Code: " + String(httpCode));
       if (httpCode == HTTP_CODE_OK) {
           NO_SERVER = false;
@@ -70,8 +53,7 @@ void loop() {
       deserializeJson(doc, payload);
       
       http.end();
-
-//      int state3 = payload.toInt();
+      
       int state1 = doc["state1"].as<int>();
       int state2 = doc["state2"].as<int>();
       int state3 = doc["state3"].as<int>();
@@ -84,7 +66,6 @@ void loop() {
       digitalWrite(D0, state1);
       setLedLen(state3, state2);
     }
-
 
 //    if (currentMillis - previousMillisReport >= REPORT_INTERVAL) {
 //        previousMillisReport = currentMillis;

@@ -2,10 +2,11 @@ void resetWiFiSettings() {
     ticker1.attach_ms(512, tickInternal);
     Serial.println("WiFi reset by special PIN");
     WiFi.disconnect(true);
+    WiFiManager wifiManager;
+    wifiManager.resetSettings();
+    ESP.eraseConfig(); 
     delay(2000);
-    ESP.reset();
-    delay(1000);
-    ESP.restart();
+    ESP.reset(); 
 }
 
 void checkWiFiConfiguration() {
