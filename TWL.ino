@@ -30,6 +30,15 @@
 MAX7219 <4, 1, D3> mtrx;
 // // //
 
+//needed for display
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+#define SCREEN_WIDTH 128 // OLED display width, in pixels
+#define SCREEN_HEIGHT 64 // OLED display height, in pixels
+Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
+
+///////
+
 ADC_MODE(ADC_VCC);
 
 BME280I2C::Settings settings(
@@ -67,6 +76,7 @@ boolean STATUS_REPORT_SEND = false;
 
 int LED_BRIGHT = 100; // яркость внешнего статусного светодиода в режиме ожидания
 int STATE_INTERVAL = 30 * 60 * 1000; // интервал опроса флагов с сервера
+int MONITOR_INTERVAL = 1  * 1000; // интервал опроса датчиков
 int SENS_INTERVAL = 30  * 1000; // интервал опроса датчиков
 int REBOOT_INTERVAL = 60 * 60000 * 24 * 7; // интервал принудительной перезагрузки устройства, мы не перезагружаемся, если нет сети, чтобы не потерять время и возможность накапливать буфер
 int CONFIG_INTERVAL = 60 * 60000 * 24; // интервал обновления конфигурации устройства с сервера
@@ -80,13 +90,14 @@ int MODE_RESET_WIFI = 0; // флаг означающий, что пользов
 
 const char *DEVICE_MODEL = "HCS";
 const char *DEVICE_REVISION = "universal";
-const char *DEVICE_FIRMWARE = "5.0";
+const char *DEVICE_FIRMWARE = "5.1";
 
 const int RESET_WIFI = 0; // D3
 const int LED_EXTERNAL = 14; // D5
 
 unsigned long previousMillis = 0;
 unsigned long previousMillis_STATE = 0;
+unsigned long previousMillis_MONITOR = 0;
 unsigned long previousMillis_SENS_OUTDOOR = 0;
 unsigned long previousMillis_SENS_INDOOR1 = 0;
 unsigned long previousMillis_SENS_INDOOR2 = 0;
@@ -134,4 +145,3 @@ void tickOffAll() {
     ticker1.detach();
     ticker2.detach();
 }
-

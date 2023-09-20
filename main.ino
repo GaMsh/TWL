@@ -27,6 +27,38 @@ void loop() {
       analogWrite(LED_EXTERNAL, 25);
     }
 
+    if (currentMillis - previousMillis_MONITOR >= MONITOR_INTERVAL) {
+      Serial.println("Check monitor");
+      previousMillis_MONITOR = currentMillis;
+
+      WiFiClient wifi;
+      HTTPClient http;
+      String uri = HTTP_API_SERVER + TOKEN + "/data";
+      http.begin(wifi, uri);
+      http.setUserAgent(deviceName);
+      http.setTimeout(5000);
+
+      int httpCode = http.GET();
+      Serial.println("HTTP Code: " + String(httpCode));
+      if (httpCode == HTTP_CODE_OK) {
+          NO_SERVER = false;
+      }
+
+      String payload = http.getString();
+      StaticJsonDocument<2048> doc;
+      deserializeJson(doc, payload, DeserializationOption::NestingLimit(6));
+      
+      http.end();
+      
+      display.clearDisplay();
+      display.setTextSize(2);
+      display.setTextColor(SSD1306_WHITE);
+      display.setCursor(0, 0);
+      display.println(doc["data"].as<String>());
+  //    display.print(doc["data"]["summary"]["paramsRaw"]["T:"].as<float>());
+      display.display();
+    }
+
     if (currentMillis - previousMillis_STATE >= STATE_INTERVAL) {
       Serial.println("Check state");
       previousMillis_STATE = currentMillis;
