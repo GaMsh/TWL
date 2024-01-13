@@ -14,7 +14,7 @@
 // важно знать! используется изменённая библиотека WiFiManager 0.15,
 // с русским переводом, блокировкой сброса точки в случае длительного отсутствия и парой баг фиксов
 
-// для работы датчиков климата
+// для работы зоопарка датчиков климата
 #include <Wire.h>                 // https://github.com/esp8266/Arduino
 #include <HTU2xD_SHT2x_Si70xx.h>  // https://github.com/enjoyneering/HTU2xD_SHT2x_Si70xx
 #include <BME280I2C.h>            // https://github.com/finitespace/BME280
@@ -23,18 +23,20 @@
 // для работы статусных светодиодов
 #include <Ticker.h>               // https://github.com/esp8266/Arduino
 
-// // //
+// для работы со светодиодными матрицами
 #include <GyverMAX7219.h>
 #define AM_W 32  // 4 матрицы (32 точки)
 #define AM_H 8  // 1 матрицы (8 точек)
 MAX7219 <4, 1, D3> mtrx;
-// // //
+//
 
-//needed for display
+// для работы экранчика ssd1306
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
+#define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
+#define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
 ///////
@@ -51,9 +53,9 @@ BME280I2C::Settings settings(
   BME280::SpiEnable_False,
   BME280I2C::I2CAddr_0x76
 );
-BME280I2C OUTDOOR_SENSOR(settings);
-HTU2xD_SHT2x_SI70xx INDOOR_SENSOR1(HTU2xD_SENSOR, HUMD_12BIT_TEMP_14BIT);
-SHT3x INDOOR_SENSOR2;
+BME280I2C BME280(settings);
+HTU2xD_SHT2x_SI70xx HTU21(HTU2xD_SENSOR, HUMD_12BIT_TEMP_14BIT);
+SHT3x SHT31;
 
 Ticker ticker1;
 Ticker ticker2;
@@ -66,8 +68,8 @@ Ticker ticker2;
 #define MAIN_MODE_OFFLINE 200 // устройство работает, но испытывает проблемы с передачей данных
 #define MAIN_MODE_FAIL 300 // что-то пошло не так, устройство не может функционировать без вмешательства прямых рук
 
-#define FIRMWARE_UPDATE_SERVER "http://tw.gamsh.ru"
-#define HTTP_API_SERVER "http://bigapi.ru/"
+#define FIRMWARE_UPDATE_SERVER "http://tw.gamsh.ru" // адрес сервера, для авто-обновления прошивки
+#define HTTP_API_SERVER "http://bigapi.ru/" // адрес апи сервера
 
 boolean STATUS_OUTDOOR_GOOD = true;
 boolean STATUS_INDOOR1_GOOD = true;
@@ -76,24 +78,24 @@ boolean STATUS_REPORT_SEND = false;
 
 int LED_BRIGHT = 100; // яркость внешнего статусного светодиода в режиме ожидания
 int STATE_INTERVAL = 30 * 60 * 1000; // интервал опроса флагов с сервера
-int MONITOR_INTERVAL = 1  * 1000; // интервал опроса датчиков
-int SENS_INTERVAL = 30  * 1000; // интервал опроса датчиков
+int MONITOR_INTERVAL = 0; // 15  * 1000; // интервал обновления инфо-табло
+int SENS_INTERVAL = 30 * 1000; // интервал опроса датчиков
 int REBOOT_INTERVAL = 60 * 60000 * 24 * 7; // интервал принудительной перезагрузки устройства, мы не перезагружаемся, если нет сети, чтобы не потерять время и возможность накапливать буфер
 int CONFIG_INTERVAL = 60 * 60000 * 24; // интервал обновления конфигурации устройства с сервера
 int REPORT_INTERVAL = 60 * 60000; // интервал повтора отправки отчёта о проблемах (если проблема актуальна)
 
 boolean NO_INTERNET = true; // флаг состояния, поднимается если отвалилась wifi сеть
 boolean NO_SERVER = true; // флаг состояния, поднимается если отвалился сервер
-boolean MODE_SEND_BUFFER = false; // флаг означающий, что необходимо сделать опустошение буфера
+//boolean MODE_SEND_BUFFER = false; // флаг означающий, что необходимо сделать опустошение буфера
 
 int MODE_RESET_WIFI = 0; // флаг означающий, что пользователем инициирован процесс очистки настроек WiFi
 
 const char *DEVICE_MODEL = "HCS";
-const char *DEVICE_REVISION = "universal";
-const char *DEVICE_FIRMWARE = "5.1";
+const char *DEVICE_REVISION = "uni";
+const char *DEVICE_FIRMWARE = "5.2.0";
 
-const int RESET_WIFI = 0; // D3
-const int LED_EXTERNAL = 14; // D5
+const int RESET_WIFI = 0; // D3 - пин сброса wifi
+const int LED_EXTERNAL = 14; // D5 - пин внешнего светодиода
 
 unsigned long previousMillis = 0;
 unsigned long previousMillis_STATE = 0;
@@ -108,6 +110,7 @@ unsigned long previousMillisReport = 0;
 
 String deviceName = String(DEVICE_MODEL) + "_" + String(DEVICE_FIRMWARE);
 String TOKEN = "";
+String TARGET_TOKEN = "319C-r5A7-3k25"; // тут будет url того датчика, откуда мы черпаем состояние
 
 int bytesWriten = 0;
 
