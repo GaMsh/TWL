@@ -78,7 +78,7 @@ void setup() {
       int tryBMERemaining = 20;
       while (!BME280.begin()) {
         if (tryBMERemaining == 0) {
-          STATUS_OUTDOOR_GOOD = false;
+          STATUS_BME280_GOOD = false;
           break;
         }
 

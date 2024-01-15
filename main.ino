@@ -109,13 +109,13 @@ void loop() {
   //    }
   //
   //    if (!STATUS_REPORT_SEND) {
-  //        if (!STATUS_OUTDOOR_GOOD) {
+  //        if (!STATUS_BME280_GOOD) {
   ////            callServer("E", "", "OUTDOOR");
   //        }
-  //        if (!STATUS_INDOOR1_GOOD) {
+  //        if (!STATUS_HTU21_GOOD) {
   ////            callServer("E", "", "INDOOR1");
   //        }
-  //        if (!STATUS_INDOOR2_GOOD) {
+  //        if (!STATUS_SHT31_GOOD) {
   ////            callServer("E", "", "INDOOR2");
   //        }
   //        STATUS_REPORT_SEND = true;

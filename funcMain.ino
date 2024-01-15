@@ -84,25 +84,25 @@ void taskRestart(int currentMillis) {
 //  if (!isnan(p1)) {
 //    someGood = true;
 //    urlString += "t1=" + String(t1) + "&h1=" + String(h1) + "&p1=" + String(p1) + "&";
-//    STATUS_OUTDOOR_GOOD = true;
+//    STATUS_BME280_GOOD = true;
 //  } else {
-//    STATUS_OUTDOOR_GOOD = false;
+//    STATUS_BME280_GOOD = false;
 //  }
 //  Serial.println(t2);
 //  if (t2 != 255 && t2 != 998 && t2 != 999) {
 //    someGood = true;
 //    urlString += "t2=" + String(t2) + "&" + "h2=" + String(h2) + "&";
-//    STATUS_INDOOR1_GOOD = true;
+//    STATUS_HTU21_GOOD = true;
 //  } else {
-//    STATUS_INDOOR1_GOOD = false;
+//    STATUS_HTU21_GOOD = false;
 //  }
 //  Serial.println(t3);
 //  if (t3 != 255 && t3 != 998 && t3 != 999 && h3 != 0) {
 //    someGood = true;
 //    urlString += "t3=" + String(t3) + "&" + "h3=" + String(h3) + "&";
-//    STATUS_INDOOR2_GOOD = true;
+//    STATUS_SHT31_GOOD = true;
 //  } else {
-//    STATUS_INDOOR2_GOOD = false;
+//    STATUS_SHT31_GOOD = false;
 //  }
 //
 //  urlString += "millis=" + String(millis()) + "&" + "time=" + String(time(&now));

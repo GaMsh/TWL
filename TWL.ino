@@ -71,9 +71,9 @@ Ticker ticker2;
 #define FIRMWARE_UPDATE_SERVER "http://tw.gamsh.ru" // адрес сервера, для авто-обновления прошивки
 #define HTTP_API_SERVER "http://bigapi.ru/" // адрес апи сервера
 
-boolean STATUS_OUTDOOR_GOOD = true;
-boolean STATUS_INDOOR1_GOOD = true;
-boolean STATUS_INDOOR2_GOOD = true;
+boolean STATUS_BME280_GOOD = true;
+boolean STATUS_HTU21_GOOD = true;
+boolean STATUS_SHT31_GOOD = true;
 boolean STATUS_REPORT_SEND = false;
 
 int LED_BRIGHT = 100; // яркость внешнего статусного светодиода в режиме ожидания
