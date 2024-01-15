@@ -1,4 +1,4 @@
-[![Foo](https://img.shields.io/badge/Version-1.4-brightgreen.svg?style=flat-square)](#versions)
+[![latest](https://img.shields.io/github/v/release/GyverLibs/GyverMAX7219.svg?color=brightgreen)](https://github.com/GyverLibs/GyverMAX7219/releases/latest/download/GyverMAX7219.zip)
 [![Foo](https://img.shields.io/badge/Website-AlexGyver.ru-blue.svg?style=flat-square)](https://alexgyver.ru/)
 [![Foo](https://img.shields.io/badge/%E2%82%BD$%E2%82%AC%20%D0%9D%D0%B0%20%D0%BF%D0%B8%D0%B2%D0%BE-%D1%81%20%D1%80%D1%8B%D0%B1%D0%BA%D0%BE%D0%B9-orange.svg?style=flat-square)](https://alexgyver.ru/support_alex/)
 [![Foo](https://img.shields.io/badge/README-ENGLISH-blueviolet.svg?style=flat-square)](https://github-com.translate.goog/GyverLibs/GyverMAX7219?_x_tr_sl=ru&_x_tr_tl=en)  
@@ -153,6 +153,7 @@ void loop() {
 - v1.2.2 - убран FastIO
 - v1.3 - мелкие доработки и оптимизация, добавил поворот матриц
 - v1.4 - добавил поддержку матричных дисплеев любой конфигурации (точка подключения, направление, чередование)
+- v1.5 - добавил раздельное управление яркостью и питанием матриц
 
 <a id="feedback"></a>
 ## Баги и обратная связь
