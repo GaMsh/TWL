@@ -3,20 +3,14 @@ bool getDeviceConfiguration(bool first) {
   StaticJsonDocument<1024> jb;
   String postData =
       "device=" + getSensorID() + "&" + "token=" + TOKEN + "&" +
-      "revision=" + String(DEVICE_REVISION) + "&" +
-      "model=" + String(DEVICE_MODEL) + "&" +
-      "firmware=" + String(DEVICE_FIRMWARE) +
-      "&"
-      "ip=" +
-      WiFi.localIP().toString() + "&" + "mac=" + String(WiFi.macAddress()) +
-      "&" + "ssid=" + String(WiFi.SSID()) + "&" +
+      "revision=" + String(DEVICE_REVISION) + "&model=" + String(DEVICE_MODEL) + "&" +
+      "firmware=" + String(DEVICE_FIRMWARE) + "&ip=" + WiFi.localIP().toString() + "&" +
+      "mac=" + String(WiFi.macAddress()) + "&" + "ssid=" + String(WiFi.SSID()) + "&" +
       "rssi=" + String(WiFi.RSSI()) + "&" + "vcc=" + String(ESP.getVcc()) +
       "&" + "nu=" + String(NO_AUTO_UPDATE) + "&" + "ct=" + String(CHIP_TEST);
-  //+ "&" +
-  //"bufferCount=" + String(bufferCount("data"));
   Serial.println(postData);
 
-  const size_t capacity = JSON_OBJECT_SIZE(10) + JSON_ARRAY_SIZE(10) + 60;
+  const size_t capacity = JSON_OBJECT_SIZE(10) + JSON_ARRAY_SIZE(10) + 256;
   DynamicJsonDocument doc(capacity);
 
   WiFiClient wifi;
@@ -40,8 +34,7 @@ bool getDeviceConfiguration(bool first) {
       return false;
     }
   }
-  Serial.println("Get device configuration from server, HTTP Code: " +
-                 String(httpCode));
+  Serial.println("Get device configuration from server, HTTP Code: " + String(httpCode));
   if (httpCode == HTTP_CODE_OK) {
     NO_SERVER = false;
   } else {
@@ -65,96 +58,57 @@ bool getDeviceConfiguration(bool first) {
     Serial.println("Device token was updated in store");
   }
 
-  if (doc["led_bright"].as<int>() > 0) {
-    int LED_BRIGHT_NEW = doc["led_bright"].as<int>();
+  if (doc["state1"].as<int>() > 0) {
+    int LED_BRIGHT_NEW = doc["state1"].as<int>();
     if (LED_BRIGHT != LED_BRIGHT_NEW) {
       LED_BRIGHT = LED_BRIGHT_NEW;
-      writeCfgFile("led_bright", doc["led_bright"].as<String>());
-      Serial.println("Led brightness was updated in store");
+      writeCfgFile("led_bright", doc["state1"].as<String>());
+      Serial.println("Led brightness was updated in store: " + LED_BRIGHT);
     }
   }
 
+  if (doc["state2"].as<String>()) {
+    String MONITOR_SLUG_NEW = doc["state2"].as<String>();
+    if (MONITOR_SLUG != MONITOR_SLUG_NEW) {
+      MONITOR_SLUG = MONITOR_SLUG_NEW;
+      writeCfgFile("monitor_slug", doc["state2"].as<String>());
+      Serial.println("Monitor id was updated in store: " + MONITOR_SLUG);
+    }
+  }
+
+//  if (doc["state3"].as<int>() > 0) {
+    int MONITOR_INTERVAL_NEW = doc["state3"].as<int>();
+    if (MONITOR_INTERVAL != MONITOR_INTERVAL_NEW) {
+      MONITOR_INTERVAL = MONITOR_INTERVAL_NEW;
+      writeCfgFile("monitor_interval", doc["state3"].as<String>());
+      Serial.println("Monitor interval was updated in store: " + MONITOR_INTERVAL);
+    }
+//  }
+
+  if (doc["state4"].as<String>()) {
+    String MONITOR_NAME_NEW = doc["state4"].as<String>();
+    if (MONITOR_NAME != MONITOR_NAME_NEW) {
+      MONITOR_NAME = MONITOR_NAME_NEW;
+      writeCfgFile("monitor_name", doc["state4"].as<String>());
+      Serial.println("Monitor name was updated in store: " + MONITOR_NAME);
+    }
+  }
+
+//  if (doc["state5"].as<int>()) {
+//Serial.println(doc["state5"].as<String>());
+//if (doc["state5"].as<String>() != "null") {
+//    int SENS_INTERVAL_NEW = doc["state5"].as<int>();
+//    if (SENS_INTERVAL != SENS_INTERVAL_NEW) {
+//      SENS_INTERVAL = SENS_INTERVAL_NEW;
+//      writeCfgFile("sensor_interval", doc["state5"].as<String>());
+//      Serial.println("Sensor interval was updated in store: " + SENS_INTERVAL);
+//    }
+//}
+//  }
+
+
   return true;
 }
-
-// bufferFile functions
-//int bufferCount(String filename) {
-//  int countLine = 0;
-//  File bufferFile = LittleFS.open("/" + filename + ".buff", "r");
-//  char buffer[256];
-//  while (bufferFile.available()) {
-//    int l = bufferFile.readBytesUntil('\n', buffer, sizeof(buffer));
-//    buffer[l] = 0;
-//    countLine++;
-//  }
-//  bufferFile.close();
-//  return countLine;
-//}
-
-//bool bufferWrite(String filename, String urlString) {
-//  File bufferFile = LittleFS.open("/" + filename + ".buff", "a+");
-//  if (bufferFile) {
-//    Serial.println("Write to local buffer file...");
-//    Serial.println(urlString);
-//    bufferFile.println(urlString);
-//    bufferFile.close();
-//    return true;
-//  }
-//  Serial.println("Buffer file open failed");
-//  return false;
-//}
-//
-//int bufferReadAndSend(String filename) {
-//  File bufferFile = LittleFS.open("/" + filename + ".buff", "r+");
-//  if (bufferFile) {
-//    int until = bufferCount(filename);
-//
-//    WiFiClient wifi;
-//    HTTPClient http;
-//    http.begin(wifi, HTTP_API_SERVER);
-//    http.setUserAgent(deviceName);
-//    http.addHeader("Content-Type", "text/plain");
-//    http.setTimeout(15000);
-//
-//    bufferFile.seek(0, SeekSet);
-//    Serial.print("Buffer size: ");
-//    Serial.print(bufferFile.size());
-//    Serial.println();
-//
-//    int rowsCountAll = 0;
-//    int rowsCount = 0;
-//    String toSend = "";
-//    char buffer[128];
-//    while (bufferFile.available()) {
-//      int l = bufferFile.readBytesUntil('\n', buffer, sizeof(buffer));
-//      buffer[l] = 0;
-//
-//      toSend += buffer + String("\n ");
-//      rowsCount++;
-//      rowsCountAll++;
-//
-//      if (rowsCount >= 10 || rowsCountAll >= until) {
-//        Serial.println("SEND part of buffer");
-//        int httpCode = http.POST(toSend);
-//        Serial.println(httpCode);
-//        http.end();
-//        if (httpCode == HTTP_CODE_OK) {
-//          toSend = "";
-//          rowsCount = 0;
-//
-//          if (rowsCountAll >= until) {
-//            Serial.println("Delete buffer file");
-//            bufferFile.close();
-//            LittleFS.remove("/data.buff");
-//            return true;
-//          }
-//        }
-//      }
-//    }
-//  }
-//
-//  return -1;
-//}
 
 // https://stackoverflow.com/questions/9072320/split-string-into-string-array
 String getValue(String data, char separator, int index) {

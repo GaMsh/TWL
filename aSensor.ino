@@ -1,4 +1,4 @@
-void sendSensorData_OUTDOOR(int currentMillis) {
+void sendSensorData_BME280(int currentMillis) {
   float Temperature;
   float Humidity;
   float Pressure;
@@ -10,7 +10,6 @@ void sendSensorData_OUTDOOR(int currentMillis) {
   } else {
     BME280::TempUnit tempUnit(BME280::TempUnit_Celsius);
     BME280::PresUnit presUnit(BME280::PresUnit_Pa);
-
     BME280.read(Pressure, Temperature, Humidity, tempUnit, presUnit);
     Pressure = Pressure / 133.3224;
   }
@@ -21,7 +20,7 @@ void sendSensorData_OUTDOOR(int currentMillis) {
   }
 }
 
-void sendSensorData_INDOOR1(int currentMillis) {
+void sendSensorData_HTU21(int currentMillis) {
   float Temperature;
   float Humidity;
 
@@ -39,7 +38,7 @@ void sendSensorData_INDOOR1(int currentMillis) {
   }
 }
 
-void sendSensorData_INDOOR2(int currentMillis) {
+void sendSensorData_SHT31(int currentMillis) {
   float Temperature;
   float Humidity;
 

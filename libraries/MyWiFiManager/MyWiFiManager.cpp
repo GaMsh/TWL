@@ -296,7 +296,7 @@ int WiFiManager::connectWifi(String ssid, String pass) {
   // check if we've got static_ip settings, if we do, use those.
   if (_sta_static_ip) {
     DEBUG_WM(F("Custom STA IP/GW/Subnet"));
-    WiFi.config(_sta_static_ip, _sta_static_gw, _sta_static_sn, _sta_static_dns1, _sta_static_dns2); //GaM: ADD custom DNS !
+    WiFi.config(_sta_static_ip, _sta_static_gw, _sta_static_sn); //, _sta_static_dns1, _sta_static_dns2); //GaM: ADD custom DNS !
     DEBUG_WM(WiFi.localIP());
   }
   //fix for auto connect racing issue
@@ -428,12 +428,12 @@ void WiFiManager::setAPStaticIPConfig(IPAddress ip, IPAddress gw, IPAddress sn) 
   _ap_static_sn = sn;
 }
 
-void WiFiManager::setSTAStaticIPConfig(IPAddress ip, IPAddress gw, IPAddress sn, IPAddress ns1, IPAddress ns2) {
+void WiFiManager::setSTAStaticIPConfig(IPAddress ip, IPAddress gw, IPAddress sn) { //, IPAddress ns1, IPAddress ns2) {
   _sta_static_ip = ip;
   _sta_static_gw = gw;
   _sta_static_sn = sn;
-  _sta_static_dns1 = ns1;
-  _sta_static_dns1 = ns1;
+//  _sta_static_dns1 = ns1;
+//  _sta_static_dns1 = ns1;
 }
 
 void WiFiManager::setMinimumSignalQuality(int quality) {

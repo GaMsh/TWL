@@ -1,4 +1,4 @@
-#include <ESP8266WiFi.h>          // https://github.com/esp8266/Arduino (3.1.1)
+#include <ESP8266WiFi.h>          // https://github.com/esp8266/Arduino (3.1.2)
 #include <ESP8266HTTPClient.h>    // https://github.com/esp8266/Arduino
 #include <ESP8266httpUpdate.h>    // https://github.com/esp8266/Arduino
 #include <WiFiUdp.h>              // https://github.com/esp8266/Arduino
@@ -62,7 +62,7 @@ Ticker ticker2;
 
 #define SERIAL_BAUD 115200 // скорость Serial порта, менять нет надобности
 #define CHIP_TEST 0 // если нужно протестировать плату без подключения датчиков, задайте 1
-#define NO_AUTO_UPDATE 0 // если нужно собрать свою прошивку и не получить перезатирание через OTA, задайте 1
+#define NO_AUTO_UPDATE 1 // если нужно собрать свою прошивку и не получить перезатирание через OTA, задайте 1
 
 #define MAIN_MODE_NORMAL 100 // всё нормально, связь и работа устройства в норме
 #define MAIN_MODE_OFFLINE 200 // устройство работает, но испытывает проблемы с передачей данных
@@ -78,21 +78,22 @@ boolean STATUS_REPORT_SEND = false;
 
 int LED_BRIGHT = 100; // яркость внешнего статусного светодиода в режиме ожидания
 int STATE_INTERVAL = 30 * 60 * 1000; // интервал опроса флагов с сервера
-int MONITOR_INTERVAL = 0; // 15  * 1000; // интервал обновления инфо-табло
+String MONITOR_SLUG = ""; // id инфо-табло
+int MONITOR_INTERVAL = 60 * 1000; // интервал обновления инфо-табло
+String MONITOR_NAME = "test"; // название инфо-табло
 int SENS_INTERVAL = 30 * 1000; // интервал опроса датчиков
 int REBOOT_INTERVAL = 60 * 60000 * 24 * 7; // интервал принудительной перезагрузки устройства, мы не перезагружаемся, если нет сети, чтобы не потерять время и возможность накапливать буфер
 int CONFIG_INTERVAL = 60 * 60000 * 24; // интервал обновления конфигурации устройства с сервера
-int REPORT_INTERVAL = 60 * 60000; // интервал повтора отправки отчёта о проблемах (если проблема актуальна)
+//int REPORT_INTERVAL = 60 * 60000; // интервал повтора отправки отчёта о проблемах (если проблема актуальна)
 
 boolean NO_INTERNET = true; // флаг состояния, поднимается если отвалилась wifi сеть
 boolean NO_SERVER = true; // флаг состояния, поднимается если отвалился сервер
-//boolean MODE_SEND_BUFFER = false; // флаг означающий, что необходимо сделать опустошение буфера
 
 int MODE_RESET_WIFI = 0; // флаг означающий, что пользователем инициирован процесс очистки настроек WiFi
 
 const char *DEVICE_MODEL = "HCS";
 const char *DEVICE_REVISION = "uni";
-const char *DEVICE_FIRMWARE = "5.2.0";
+const char *DEVICE_FIRMWARE = "5.3.0";
 
 const int RESET_WIFI = 0; // D3 - пин сброса wifi
 const int LED_EXTERNAL = 14; // D5 - пин внешнего светодиода
@@ -100,9 +101,9 @@ const int LED_EXTERNAL = 14; // D5 - пин внешнего светодиод�
 unsigned long previousMillis = 0;
 unsigned long previousMillis_STATE = 0;
 unsigned long previousMillis_MONITOR = 0;
-unsigned long previousMillis_SENS_OUTDOOR = 0;
-unsigned long previousMillis_SENS_INDOOR1 = 0;
-unsigned long previousMillis_SENS_INDOOR2 = 0;
+unsigned long previousMillis_SENS_BME280 = 0;
+unsigned long previousMillis_SENS_HTU21 = 0;
+unsigned long previousMillis_SENS_SHT31 = 0;
 unsigned long previousMillisConfig = 0;
 unsigned long previousMillisPing = 0;
 unsigned long previousMillisReboot = 0;
@@ -110,7 +111,6 @@ unsigned long previousMillisReport = 0;
 
 String deviceName = String(DEVICE_MODEL) + "_" + String(DEVICE_FIRMWARE);
 String TOKEN = "";
-String TARGET_TOKEN = "319C-r5A7-3k25"; // тут будет url того датчика, откуда мы черпаем состояние
 
 int bytesWriten = 0;
 

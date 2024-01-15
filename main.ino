@@ -9,18 +9,22 @@ void loop() {
   } else {
     analogWrite(LED_EXTERNAL, LED_BRIGHT);
   }
-  if (currentMillis - previousMillis_SENS_OUTDOOR >= SENS_INTERVAL) {
-    Serial.println("SL");
-    previousMillis_SENS_OUTDOOR = currentMillis;
-    sendSensorData_OUTDOOR(currentMillis);
-  }
-  if (currentMillis - previousMillis_SENS_INDOOR1 >= SENS_INTERVAL) {
-    previousMillis_SENS_INDOOR1 = currentMillis;
-    sendSensorData_INDOOR1(currentMillis);
-  }
-  if (currentMillis - previousMillis_SENS_INDOOR2 >= SENS_INTERVAL) {
-    previousMillis_SENS_INDOOR2 = currentMillis;
-    sendSensorData_INDOOR2(currentMillis);
+  if (SENS_INTERVAL > 0) {
+    if (currentMillis - previousMillis_SENS_BME280 >= SENS_INTERVAL) {
+      Serial.println("Sensor read: BME280");
+      previousMillis_SENS_BME280 = currentMillis;
+      sendSensorData_BME280(currentMillis);
+    }
+    if (currentMillis - previousMillis_SENS_HTU21 >= SENS_INTERVAL) {
+      Serial.println("Sensor read: HTU21");
+      previousMillis_SENS_HTU21 = currentMillis;
+      sendSensorData_HTU21(currentMillis);
+    }
+    if (currentMillis - previousMillis_SENS_SHT31 >= SENS_INTERVAL) {
+      Serial.println("Sensor read: SHT31");
+      previousMillis_SENS_SHT31 = currentMillis;
+      sendSensorData_SHT31(currentMillis);
+    }
   }
   if (WiFi.status() == WL_CONNECTED) {
     analogWrite(LED_EXTERNAL, LED_BRIGHT);
@@ -28,14 +32,13 @@ void loop() {
     analogWrite(LED_EXTERNAL, 25);
   }
 
-  if (MONITOR_INTERVAL > 0 &&
-      currentMillis - previousMillis_MONITOR >= MONITOR_INTERVAL) {
-    Serial.println("Check monitor");
+  if (MONITOR_INTERVAL > 0 && currentMillis - previousMillis_MONITOR >= MONITOR_INTERVAL) {
+    Serial.println("Get data from monitor: " + MONITOR_SLUG);
     previousMillis_MONITOR = currentMillis;
 
     WiFiClient wifi;
     HTTPClient http;
-    String uri = HTTP_API_SERVER + TARGET_TOKEN + "/data";
+    String uri = HTTP_API_SERVER + MONITOR_SLUG + "/data";
     http.begin(wifi, uri);
     http.setUserAgent(deviceName);
     http.setTimeout(5000);
@@ -52,18 +55,18 @@ void loop() {
       display.setTextSize(2);
       display.setTextColor(SSD1306_WHITE);
       display.setCursor(0, 0);
-      display.println("Ligovka");
+      display.println(MONITOR_NAME);
       display.println(doc["data"][1].as<String>());
       display.println(doc["data"][2].as<String>());
       display.println(doc["data"][3].as<String>());
-      //    display.print(doc["data"]["summary"]["paramsRaw"]["T:"].as<float>());
+      //display.print(doc["data"]["summary"]["paramsRaw"]["T:"].as<float>());
       display.display();
     }
 
     http.end();
   }
 
-  if (currentMillis - previousMillis_STATE >= STATE_INTERVAL) {
+  if (STATE_INTERVAL > 0 && currentMillis - previousMillis_STATE >= STATE_INTERVAL) {
     Serial.println("Check state");
     previousMillis_STATE = currentMillis;
 
@@ -87,20 +90,19 @@ void loop() {
     const size_t capacity = JSON_OBJECT_SIZE(8) + JSON_ARRAY_SIZE(8) + 256;
     DynamicJsonDocument doc(capacity);
     deserializeJson(doc, payload);
-
     http.end();
 
     int state1 = doc["state1"].as<int>();
-    int state2 = doc["state2"].as<int>();
+    String state2 = doc["state2"].as<String>();
     int state3 = doc["state3"].as<int>();
-    int state4 = doc["state4"].as<int>();
+    String state4 = doc["state4"].as<String>();
     int state5 = doc["state5"].as<int>();
     int state6 = doc["state6"].as<int>();
     int state7 = doc["state7"].as<int>();
     int state8 = doc["state8"].as<int>();
-    digitalWrite(LED_BUILTIN, !state5);
-    digitalWrite(D0, state1);
-    setLedLen(state3, state2);
+//     digitalWrite(LED_BUILTIN, !state5);
+//     digitalWrite(D0, state6);
+//     setLedLen(state7, state8);
   }
 
   //    if (currentMillis - previousMillisReport >= REPORT_INTERVAL) {
@@ -110,13 +112,13 @@ void loop() {
   //
   //    if (!STATUS_REPORT_SEND) {
   //        if (!STATUS_BME280_GOOD) {
-  ////            callServer("E", "", "OUTDOOR");
+  ////            callServer("E", "", "BME280");
   //        }
   //        if (!STATUS_HTU21_GOOD) {
-  ////            callServer("E", "", "INDOOR1");
+  ////            callServer("E", "", "HTU21");
   //        }
   //        if (!STATUS_SHT31_GOOD) {
-  ////            callServer("E", "", "INDOOR2");
+  ////            callServer("E", "", "SHT31");
   //        }
   //        STATUS_REPORT_SEND = true;
   //    }

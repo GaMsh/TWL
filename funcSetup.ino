@@ -55,14 +55,14 @@ bool setupWiFiManager() {
   wifiManager.setMinimumSignalQuality(33);
   wifiManager.setRemoveDuplicateAPs(true);
   wifiManager.setDebugOutput(false);
-  wifiManager.setCustomHeadElement("<style>html{background:#fb7906};</style>");
+  wifiManager.setCustomHeadElement("<style>html{background:#faa55a};</style>");
 
   if (wifiManager.autoConnect()) {
     return true;
   }
 
   if (WiFi.SSID() == "") {
-    String wifiPortalSsid = deviceName + "_SETUP" + getSensorID();
+    String wifiPortalSsid = deviceName + "_SETUP_" + getSensorID();
     wifiManager.startConfigPortal(wifiPortalSsid.c_str());
   }
 
