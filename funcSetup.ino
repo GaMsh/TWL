@@ -14,17 +14,19 @@ void checkWiFiConfiguration() {
     Serial.print("Current Saved WiFi SSID: ");
     Serial.println(WiFi.SSID());
 
-    // reset wifi by touch RESET_WIFI pin to GROUND
-    int resetCycle = 0;
-    ticker1.attach_ms(36, tickInternal);
-    while (resetCycle < 42) {
-      MODE_RESET_WIFI = digitalRead(RESET_WIFI);
-      if (MODE_RESET_WIFI == LOW) {
-        resetWiFiSettings();
-        break;
+    if (NO_AUTO_UPDATE == 0) {
+      // reset wifi by touch RESET_WIFI pin to GROUND
+      int resetCycle = 0;
+      ticker1.attach_ms(36, tickInternal);
+      while (resetCycle < 42) {
+        MODE_RESET_WIFI = digitalRead(RESET_WIFI);
+        if (MODE_RESET_WIFI == LOW) {
+          resetWiFiSettings();
+          break;
+        }
+        resetCycle++;
+        delay(36);
       }
-      resetCycle++;
-      delay(36);
     }
   } else {
     Serial.println("We don`t have saved WiFi settings, need configure");

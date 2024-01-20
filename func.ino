@@ -10,9 +10,6 @@ bool getDeviceConfiguration(bool first) {
       "&" + "nu=" + String(NO_AUTO_UPDATE) + "&" + "ct=" + String(CHIP_TEST);
   Serial.println(postData);
 
-  const size_t capacity = JSON_OBJECT_SIZE(10) + JSON_ARRAY_SIZE(10) + 256;
-  DynamicJsonDocument doc(capacity);
-
   WiFiClient wifi;
   HTTPClient http;
   http.begin(wifi, String(HTTP_API_SERVER) + "reg");
@@ -41,8 +38,9 @@ bool getDeviceConfiguration(bool first) {
     return false;
   }
 
-  String payload = http.getString();
-  deserializeJson(doc, payload);
+  String json = http.getString();
+  JsonDocument doc;
+  deserializeJson(doc, json);
   http.end();
 
   int serverTime = doc["time"].as<int>();

@@ -85,11 +85,11 @@ void loop() {
       return; // false;
     }
 
-    String payload = http.getString();
+    String json = http.getString();
 
-    const size_t capacity = JSON_OBJECT_SIZE(8) + JSON_ARRAY_SIZE(8) + 256;
-    DynamicJsonDocument doc(capacity);
-    deserializeJson(doc, payload);
+//     const size_t capacity = JSON_OBJECT_SIZE(8) + JSON_ARRAY_SIZE(8) + 256;
+    JsonDocument doc;
+    deserializeJson(doc, json);
     http.end();
 
     int state1 = doc["state1"].as<int>();
