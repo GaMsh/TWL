@@ -1,22 +1,30 @@
 // core functions
 bool getDeviceConfiguration(bool first) {
-  StaticJsonDocument<1024> jb;
-  String postData =
-      "device=" + getSensorID() + "&" + "token=" + TOKEN + "&" +
-      "revision=" + String(DEVICE_REVISION) + "&model=" + String(DEVICE_MODEL) + "&" +
-      "firmware=" + String(DEVICE_FIRMWARE) + "&ip=" + WiFi.localIP().toString() + "&" +
-      "mac=" + String(WiFi.macAddress()) + "&" + "ssid=" + String(WiFi.SSID()) + "&" +
-      "rssi=" + String(WiFi.RSSI()) + "&" + "vcc=" + String(ESP.getVcc()) +
-      "&" + "nu=" + String(NO_AUTO_UPDATE) + "&" + "ct=" + String(CHIP_TEST);
-  Serial.println(postData);
-
   WiFiClient wifi;
   HTTPClient http;
-  http.begin(wifi, String(HTTP_API_SERVER) + "reg");
+
+  http.begin(wifi, String(HTTP_API_SERVER) + "init");
   http.setUserAgent(deviceName);
-  http.setTimeout(30000);
-  http.addHeader("Content-Type", "application/x-www-form-urlencoded");
-  int httpCode = http.POST(postData);
+  http.setTimeout(6000);
+  http.addHeader("Content-Type", "application/json");
+
+  JsonDocument doc;
+  doc["mac"] = String(WiFi.macAddress());
+  doc["deviceId"] = getSensorID();
+  doc["token"] = TOKEN;
+  doc["revision"] = String(DEVICE_REVISION);
+  doc["model"] = String(DEVICE_MODEL);
+  doc["firmware"] = String(DEVICE_FIRMWARE);
+  doc["ip"] = WiFi.localIP().toString();
+  doc["ssid"] = String(WiFi.SSID());
+  doc["rssi"] = String(ESP.getVcc());
+  doc["noAutoUpdate"] = NO_AUTO_UPDATE;
+  doc["chipTest"] = CHIP_TEST;
+
+  String json;
+  serializeJson(doc, json);
+
+  int httpCode = http.POST(json);
   if (!first && httpCode < 0) {
     NO_SERVER = true;
     return false;
@@ -56,7 +64,7 @@ bool getDeviceConfiguration(bool first) {
     Serial.println("Device token was updated in store");
   }
 
-  if (doc["state1"].as<int>() > 0) {
+  if (doc["state1"]) {
     int LED_BRIGHT_NEW = doc["state1"].as<int>();
     if (LED_BRIGHT != LED_BRIGHT_NEW) {
       LED_BRIGHT = LED_BRIGHT_NEW;
@@ -65,7 +73,7 @@ bool getDeviceConfiguration(bool first) {
     }
   }
 
-  if (doc["state2"].as<String>()) {
+  if (doc["state2"]) {
     String MONITOR_SLUG_NEW = doc["state2"].as<String>();
     if (MONITOR_SLUG != MONITOR_SLUG_NEW) {
       MONITOR_SLUG = MONITOR_SLUG_NEW;
@@ -74,16 +82,16 @@ bool getDeviceConfiguration(bool first) {
     }
   }
 
-//  if (doc["state3"].as<int>() > 0) {
+  if (doc["state3"]) {
     int MONITOR_INTERVAL_NEW = doc["state3"].as<int>();
     if (MONITOR_INTERVAL != MONITOR_INTERVAL_NEW) {
       MONITOR_INTERVAL = MONITOR_INTERVAL_NEW;
       writeCfgFile("monitor_interval", doc["state3"].as<String>());
       Serial.println("Monitor interval was updated in store: " + MONITOR_INTERVAL);
     }
-//  }
+  }
 
-  if (doc["state4"].as<String>()) {
+  if (doc["state4"]) {
     String MONITOR_NAME_NEW = doc["state4"].as<String>();
     if (MONITOR_NAME != MONITOR_NAME_NEW) {
       MONITOR_NAME = MONITOR_NAME_NEW;

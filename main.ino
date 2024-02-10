@@ -32,7 +32,7 @@ void loop() {
     analogWrite(LED_EXTERNAL, 25);
   }
 
-  if (MONITOR_INTERVAL > 0 && currentMillis - previousMillis_MONITOR >= MONITOR_INTERVAL) {
+  if (MONITOR_SLUG && MONITOR_INTERVAL > 0 && currentMillis - previousMillis_MONITOR >= MONITOR_INTERVAL) {
     Serial.println("Get data from monitor: " + MONITOR_SLUG);
     previousMillis_MONITOR = currentMillis;
 
@@ -41,25 +41,25 @@ void loop() {
     String uri = HTTP_API_SERVER + MONITOR_SLUG + "/data";
     http.begin(wifi, uri);
     http.setUserAgent(deviceName);
-    http.setTimeout(5000);
+    http.setTimeout(6000);
 
     int httpCode = http.GET();
     if (httpCode == HTTP_CODE_OK) {
       NO_SERVER = false;
 
-      String payload = http.getString();
-      Serial.println(payload);
-      StaticJsonDocument<2048> doc;
-      deserializeJson(doc, payload, DeserializationOption::NestingLimit(6));
+      String json = http.getString();
+      Serial.println(json);
+      JsonDocument doc;
+      deserializeJson(doc, json);
       display.clearDisplay();
       display.setTextSize(2);
       display.setTextColor(SSD1306_WHITE);
       display.setCursor(0, 0);
       display.println(MONITOR_NAME);
+      display.println(doc["data"][0].as<String>());
       display.println(doc["data"][1].as<String>());
       display.println(doc["data"][2].as<String>());
-      display.println(doc["data"][3].as<String>());
-      //display.print(doc["data"]["summary"]["paramsRaw"]["T:"].as<float>());
+//       display.print(doc["data"]["summary"]["paramsRaw"]["T:"].as<float>());
       display.display();
     }
 
@@ -86,20 +86,18 @@ void loop() {
     }
 
     String json = http.getString();
-
-//     const size_t capacity = JSON_OBJECT_SIZE(8) + JSON_ARRAY_SIZE(8) + 256;
     JsonDocument doc;
     deserializeJson(doc, json);
     http.end();
 
-    int state1 = doc["state1"].as<int>();
+    String state1 = doc["state1"].as<String>();
     String state2 = doc["state2"].as<String>();
-    int state3 = doc["state3"].as<int>();
+    String state3 = doc["state3"].as<String>();
     String state4 = doc["state4"].as<String>();
-    int state5 = doc["state5"].as<int>();
-    int state6 = doc["state6"].as<int>();
-    int state7 = doc["state7"].as<int>();
-    int state8 = doc["state8"].as<int>();
+    String state5 = doc["state5"].as<String>();
+    String state6 = doc["state6"].as<String>();
+    String state7 = doc["state7"].as<String>();
+    String state8 = doc["state8"].as<String>();
 //     digitalWrite(LED_BUILTIN, !state5);
 //     digitalWrite(D0, state6);
 //     setLedLen(state7, state8);

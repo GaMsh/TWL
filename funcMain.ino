@@ -44,7 +44,7 @@ void actionDo(String urlString) {
     analogWrite(LED_EXTERNAL, LED_BRIGHT);
   } else {
     analogWrite(LED_EXTERNAL, LED_BRIGHT);
-    writeLocalBuffer(urlString);
+//    writeLocalBuffer(urlString);
     analogWrite(LED_EXTERNAL, 0);
   }
 }
@@ -54,17 +54,26 @@ boolean callToServer(String urlString) {
     NO_INTERNET = false;
   }
 
-  Serial.println("token=" + String(TOKEN) + "&data=" + urlString);
+//   Serial.println("token=" + String(TOKEN) + "&data=" + urlString);
 
   WiFiClient wifi;
   HTTPClient http;
   String uri = HTTP_API_SERVER + TOKEN + "/data";
+  
   http.begin(wifi, uri);
   http.setUserAgent(deviceName);
-  http.addHeader("Content-Type", "application/x-www-form-urlencoded");
+  http.setTimeout(6000);
+  http.addHeader("Content-Type", "application/json");
 
-  int httpCode = http.POST("token=" + String(TOKEN) + "&data=" + urlString);
+  JsonDocument doc;
+  doc["data"] = urlString;
+
+  String json;
+  serializeJson(doc, json);
+
+  int httpCode = http.POST(json);
   Serial.println("Sending to server...");
+  
   if (httpCode != HTTP_CODE_OK) {
     NO_SERVER = true;
     return false;
@@ -77,10 +86,10 @@ boolean callToServer(String urlString) {
   return true;
 }
 
-boolean writeLocalBuffer(String urlString) {
-  if (!NO_INTERNET) {
-    NO_INTERNET = true;
-    Serial.println("NO INTERNET MODE ACTIVATED");
-  }
-  return true;
-}
+//boolean writeLocalBuffer(String urlString) {
+//  if (!NO_INTERNET) {
+//    NO_INTERNET = true;
+//    Serial.println("NO INTERNET MODE ACTIVATED");
+//  }
+//  return true;
+//}

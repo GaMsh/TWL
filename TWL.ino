@@ -80,7 +80,7 @@ int LED_BRIGHT = 100; // яркость внешнего статусного с
 int STATE_INTERVAL = 30 * 60 * 1000; // интервал опроса флагов с сервера
 String MONITOR_SLUG = ""; // id инфо-табло
 int MONITOR_INTERVAL = 60 * 1000; // интервал обновления инфо-табло
-String MONITOR_NAME = "test"; // название инфо-табло
+String MONITOR_NAME = "zero"; // название инфо-табло
 int SENS_INTERVAL = 30 * 1000; // интервал опроса датчиков
 int REBOOT_INTERVAL = 60 * 60000 * 24; // интервал принудительной перезагрузки устройства
 int CONFIG_INTERVAL = 60 * 60000 * 1; // интервал обновления конфигурации устройства с сервера
@@ -91,9 +91,9 @@ boolean NO_SERVER = true; // флаг состояния, поднимается
 
 int MODE_RESET_WIFI = 0; // флаг означающий, что пользователем инициирован процесс очистки настроек WiFi
 
-const char *DEVICE_MODEL = "HCS";
-const char *DEVICE_REVISION = "uni";
-const char *DEVICE_FIRMWARE = "5.3.1";
+const char *DEVICE_MODEL = "BigApi";
+const char *DEVICE_REVISION = "home_climat";
+const char *DEVICE_FIRMWARE = "5.5.0";
 
 const int RESET_WIFI = 0; // D3 - пин сброса wifi
 const int LED_EXTERNAL = 14; // D5 - пин внешнего светодиода

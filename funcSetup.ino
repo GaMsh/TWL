@@ -80,10 +80,9 @@ String readCfgFile(String configVar) {
     Serial.print(configVar + ": ");
     Serial.println(result);
     file.close();
+  } else {
+      Serial.println("Problem read " + configVar + ".cfg");
   }
-  // else {
-  //    Serial.println("Problem read " + configVar + ".cfg");
-  //}
 
   return result;
 }

@@ -10,7 +10,7 @@ void setup() {
   }
 
   Serial.println("Device '" + deviceName + "' is starting...");
-  Serial.println("Voltage: " + String(ESP.getVcc()));
+//  Serial.println("Voltage: " + String(ESP.getVcc()));
 
   checkWiFiConfiguration();
 
@@ -28,7 +28,7 @@ void setup() {
   ticker2.attach_ms(100, tickExternal, MAIN_MODE_OFFLINE);
 
   if (!setupWiFiManager()) {
-    delay(15000);
+    delay(12500);
     ESP.restart();
   } else {
     Serial.println("WiFi network connected (" + String(WiFi.RSSI()) + ")");
@@ -89,8 +89,7 @@ void setup() {
 
   tickOffAll();
 
-  // Завершаем инициализацию устройства, регулируем яркость светодиода по
-  // конфигу
+  // Завершаем инициализацию устройства, регулируем яркость светодиода по конфигу
   Serial.println("Init complete");
 
   analogWrite(LED_EXTERNAL, 255);
