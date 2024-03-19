@@ -1,6 +1,18 @@
 ArduinoJson: change log
 =======================
 
+v7.0.4 (2024-03-12)
+------
+
+* Make `JSON_STRING_SIZE(N)` return `N+1` to fix third-party code (issue #2054)
+
+v7.0.3 (2024-02-05)
+------
+
+* Improve error messages when using `char` or `char*` (issue #2043)
+* Reduce stack consumption (issue #2046)
+* Fix compatibility with GCC 4.8 (issue #2045)
+
 v7.0.2 (2024-01-19)
 ------
 

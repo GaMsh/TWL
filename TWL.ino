@@ -5,6 +5,8 @@
 
 // для работы локального хранилища
 #include <LittleFS.h>             // https://github.com/esp8266/Arduino
+
+// работа с json
 #include <ArduinoJson.h>          // https://github.com/bblanchon/ArduinoJson
 
 // для удобной настройки WiFi
@@ -35,7 +37,7 @@ MAX7219 <4, 1, D3> mtrx;
 #include <Adafruit_SSD1306.h>
 #define SCREEN_WIDTH 128 // OLED display width, in pixels
 #define SCREEN_HEIGHT 64 // OLED display height, in pixels
-#define OLED_RESET     -1 // Reset pin # (or -1 if sharing Arduino reset pin)
+#define OLED_RESET -1 // Reset pin # (or -1 if sharing Arduino reset pin)
 #define SCREEN_ADDRESS 0x3C ///< See datasheet for Address; 0x3D for 128x64, 0x3C for 128x32
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, -1);
 
@@ -68,13 +70,12 @@ Ticker ticker2;
 #define MAIN_MODE_OFFLINE 200 // устройство работает, но испытывает проблемы с передачей данных
 #define MAIN_MODE_FAIL 300 // что-то пошло не так, устройство не может функционировать без вмешательства прямых рук
 
-#define FIRMWARE_UPDATE_SERVER "http://tw.gamsh.ru" // адрес сервера, для авто-обновления прошивки
+#define FIRMWARE_UPDATE_SERVER "http://tw.bigapi.ru" // адрес сервера, для авто-обновления прошивки
 #define HTTP_API_SERVER "http://bigapi.ru/" // адрес апи сервера
 
 boolean STATUS_BME280_GOOD = true;
 boolean STATUS_HTU21_GOOD = true;
 boolean STATUS_SHT31_GOOD = true;
-boolean STATUS_REPORT_SEND = false;
 
 int LED_BRIGHT = 100; // яркость внешнего статусного светодиода в режиме ожидания
 int STATE_INTERVAL = 30 * 60 * 1000; // интервал опроса флагов с сервера
@@ -84,16 +85,16 @@ String MONITOR_NAME = "zero"; // название инфо-табло
 int SENS_INTERVAL = 30 * 1000; // интервал опроса датчиков
 int REBOOT_INTERVAL = 60 * 60000 * 24; // интервал принудительной перезагрузки устройства
 int CONFIG_INTERVAL = 60 * 60000 * 1; // интервал обновления конфигурации устройства с сервера
-//int REPORT_INTERVAL = 60 * 60000; // интервал повтора отправки отчёта о проблемах (если проблема актуальна)
 
 boolean NO_INTERNET = true; // флаг состояния, поднимается если отвалилась wifi сеть
 boolean NO_SERVER = true; // флаг состояния, поднимается если отвалился сервер
 
 int MODE_RESET_WIFI = 0; // флаг означающий, что пользователем инициирован процесс очистки настроек WiFi
 
-const char *DEVICE_MODEL = "BigApi";
-const char *DEVICE_REVISION = "home_climat";
-const char *DEVICE_FIRMWARE = "5.5.0";
+const char *DEVICE_MODEL = "БольшоеАпи.ру";
+const char *DEVICE_REVISION = "Погода в доме+";
+const char *DEVICE_MODEL_SYS = "TWL";
+const char *DEVICE_FIRMWARE = "5.6.2";
 
 const int RESET_WIFI = 0; // D3 - пин сброса wifi
 const int LED_EXTERNAL = 14; // D5 - пин внешнего светодиода
@@ -101,15 +102,13 @@ const int LED_EXTERNAL = 14; // D5 - пин внешнего светодиод�
 unsigned long previousMillis = 0;
 unsigned long previousMillis_STATE = 0;
 unsigned long previousMillis_MONITOR = 0;
-unsigned long previousMillis_SENS_BME280 = 0;
-unsigned long previousMillis_SENS_HTU21 = 0;
-unsigned long previousMillis_SENS_SHT31 = 0;
+unsigned long previousMillis_SENS = 0;
 unsigned long previousMillisConfig = 0;
 unsigned long previousMillisPing = 0;
 unsigned long previousMillisReboot = 0;
 unsigned long previousMillisReport = 0;
 
-String deviceName = String(DEVICE_MODEL) + "_" + String(DEVICE_FIRMWARE);
+String deviceName = String(DEVICE_MODEL_SYS) + "_" + String(DEVICE_FIRMWARE);
 String TOKEN = "";
 
 int bytesWriten = 0;

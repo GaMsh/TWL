@@ -37,24 +37,13 @@ void checkFirmwareUpdate(bool ignoreConfig) {
   }
 }
 
-void actionDo(String urlString) {
-  if (WiFi.status() == WL_CONNECTED) {
-    analogWrite(LED_EXTERNAL, 0);
-    callToServer(urlString);
-    analogWrite(LED_EXTERNAL, LED_BRIGHT);
-  } else {
-    analogWrite(LED_EXTERNAL, LED_BRIGHT);
-//    writeLocalBuffer(urlString);
-    analogWrite(LED_EXTERNAL, 0);
-  }
-}
-
-boolean callToServer(String urlString) {
+boolean sendDataToServer(String json) {
   if (NO_INTERNET) {
     NO_INTERNET = false;
   }
-
-//   Serial.println("token=" + String(TOKEN) + "&data=" + urlString);
+  if (json.length() < 8) {
+    return false;
+  }
 
   WiFiClient wifi;
   HTTPClient http;
@@ -65,31 +54,16 @@ boolean callToServer(String urlString) {
   http.setTimeout(6000);
   http.addHeader("Content-Type", "application/json");
 
-  JsonDocument doc;
-  doc["data"] = urlString;
-
-  String json;
-  serializeJson(doc, json);
-
   int httpCode = http.POST(json);
-  Serial.println("Sending to server...");
+  Serial.println("Отправка данных на сервер..." + json);
   
   if (httpCode != HTTP_CODE_OK) {
     NO_SERVER = true;
     return false;
   }
   String payload = http.getString();
-  Serial.print(String(httpCode) + ": ");
-  Serial.println(payload);
+  Serial.print("Результат: " + String(httpCode));
   http.end();
 
   return true;
 }
-
-//boolean writeLocalBuffer(String urlString) {
-//  if (!NO_INTERNET) {
-//    NO_INTERNET = true;
-//    Serial.println("NO INTERNET MODE ACTIVATED");
-//  }
-//  return true;
-//}

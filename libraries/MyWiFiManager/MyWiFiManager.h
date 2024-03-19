@@ -22,10 +22,10 @@ extern "C" {
   #include "user_interface.h"
 }
 
-const char HTTP_HEADER[] PROGMEM          = "<!DOCTYPE html><html lang=\"ru\"><head><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, user-scalable=no\"/><title>{v}</title>";
-const char HTTP_STYLE[] PROGMEM           = "<style>.c{text-align: center;} div,input{padding:5px;font-size:1em;} input{width:95%;} body{text-align: center;font-family:arial;} button{border:0;border-radius:1.3rem;background-color:#fff;color:#000;line-height:2.4rem;font-size:1.2rem;width:100%;} .q{float: right;width: 64px;text-align: right;}</style>";
+const char HTTP_HEADER[] PROGMEM          = "<!DOCTYPE html><html lang=\"en\"><head><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1, user-scalable=no\"/><title>{v}</title>";
+const char HTTP_STYLE[] PROGMEM           = "<style>.c{text-align: center;} div,input{padding:5px;font-size:1em;} input{width:95%;} body{text-align: center;font-family:verdana;} button{border:0;border-radius:1.3rem;background-color:#fff;color:#000;line-height:2.4rem;font-size:1.2rem;width:100%;} .q{float: right;width: 64px;text-align: right;}</style>";
 const char HTTP_SCRIPT[] PROGMEM          = "<script>function c(l){document.getElementById('s').value=l.innerText||l.textContent;document.getElementById('p').focus();}</script>";
-const char HTTP_HEADER_END[] PROGMEM        = "</head><body><div style='text-align:left;display:inline-block;min-width:260px;'><h2>Home Climate Sensor</h2><div>Чтобы устройство заработало, необходимо подключиться к wifi-сети</div>";
+const char HTTP_HEADER_END[] PROGMEM        = "</head><body><div style='text-align:left;display:inline-block;min-width:260px;'><h2>БольшоеАпи.ру</h2><div>Чтобы устройство заработало, необходимо подключиться к wifi-сети</div>";
 const char HTTP_PORTAL_OPTIONS[] PROGMEM  = "<form action=\"/wifi\" method=\"get\"><button>Найти WiFi-сеть</button></form><br/><form action=\"/0wifi\" method=\"get\"><button>Указать WiFi вручную</button></form><br/><form action=\"/i\" method=\"get\"><button>Информация о плате</button></form>"; //<br/><form action=\"/r\" method=\"post\"><button>Reset</button></form>";
 const char HTTP_ITEM[] PROGMEM            = "<div><a href='#p' onclick='c(this)'>{v}</a>&nbsp;<span class='q {i}'>{lock} {r}%</span></div>";
 const char HTTP_FORM_START[] PROGMEM      = "<form method='get' action='wifisave'><input id='s' name='s' length=32 placeholder='SSID'><br/><input id='p' name='p' length=64 type='password' placeholder='Пароль'><br/>";
@@ -102,7 +102,7 @@ class WiFiManager
     //sets a custom ip /gateway /subnet configuration
     void          setAPStaticIPConfig(IPAddress ip, IPAddress gw, IPAddress sn);
     //sets config for a static IP
-    void          setSTAStaticIPConfig(IPAddress ip, IPAddress gw, IPAddress sn) //, IPAddress ns1, IPAddress ns2);
+    void          setSTAStaticIPConfig(IPAddress ip, IPAddress gw, IPAddress sn, IPAddress ns1, IPAddress ns2);
     //called when AP mode and config portal is started
     void          setAPCallback( void (*func)(WiFiManager*) );
     //called when settings have been changed and connection was successful
@@ -144,8 +144,8 @@ class WiFiManager
     IPAddress     _sta_static_ip;
     IPAddress     _sta_static_gw;
     IPAddress     _sta_static_sn;
-//    IPAddress     _sta_static_dns1; // ADDED BY GaM
-//    IPAddress     _sta_static_dns2; // ADDED BY GaM
+    IPAddress     _sta_static_dns1; // ADDED BY GaM
+    IPAddress     _sta_static_dns2; // ADDED BY GaM
 
     int           _paramsCount            = 0;
     int           _minimumQuality         = -1;

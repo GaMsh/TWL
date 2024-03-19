@@ -54,7 +54,7 @@ void manualCheckFirmwareUpdate() {
 bool setupWiFiManager() {
   WiFiManager wifiManager;
   wifiManager.setAPCallback(configModeCallback);
-  wifiManager.setMinimumSignalQuality(33);
+  wifiManager.setMinimumSignalQuality(25);
   wifiManager.setRemoveDuplicateAPs(true);
   wifiManager.setDebugOutput(false);
   wifiManager.setCustomHeadElement("<style>html{background:#faa55a};</style>");

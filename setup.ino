@@ -10,7 +10,6 @@ void setup() {
   }
 
   Serial.println("Device '" + deviceName + "' is starting...");
-//  Serial.println("Voltage: " + String(ESP.getVcc()));
 
   checkWiFiConfiguration();
 

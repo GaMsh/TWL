@@ -8,31 +8,31 @@ bool getDeviceConfiguration(bool first) {
   http.setTimeout(6000);
   http.addHeader("Content-Type", "application/json");
 
-  JsonDocument doc;
-  doc["mac"] = String(WiFi.macAddress());
-  doc["deviceId"] = getSensorID();
-  doc["token"] = TOKEN;
-  doc["revision"] = String(DEVICE_REVISION);
-  doc["model"] = String(DEVICE_MODEL);
-  doc["firmware"] = String(DEVICE_FIRMWARE);
-  doc["ip"] = WiFi.localIP().toString();
-  doc["ssid"] = String(WiFi.SSID());
-  doc["rssi"] = String(ESP.getVcc());
-  doc["noAutoUpdate"] = NO_AUTO_UPDATE;
-  doc["chipTest"] = CHIP_TEST;
+  JsonDocument docReq;
+  docReq["mac"] = String(WiFi.macAddress());
+  docReq["deviceId"] = getSensorID();
+  docReq["token"] = TOKEN;
+  docReq["revision"] = String(DEVICE_REVISION);
+  docReq["model"] = String(DEVICE_MODEL);
+  docReq["firmware"] = String(DEVICE_FIRMWARE);
+  docReq["ip"] = WiFi.localIP().toString();
+  docReq["ssid"] = String(WiFi.SSID());
+  docReq["rssi"] = String(ESP.getVcc());
+  docReq["noAutoUpdate"] = NO_AUTO_UPDATE;
+  docReq["chipTest"] = CHIP_TEST;
 
-  String json;
-  serializeJson(doc, json);
+  String jsonReq;
+  serializeJson(docReq, jsonReq);
 
-  int httpCode = http.POST(json);
+  int httpCode = http.POST(jsonReq);
   if (!first && httpCode < 0) {
     NO_SERVER = true;
     return false;
   } else {
-    if (httpCode != HTTP_CODE_OK && !CHIP_TEST) {
+    if (httpCode != HTTP_CODE_OK && httpCode != HTTP_CODE_CREATED && !CHIP_TEST) {
       ticker1.attach_ms(200, tickInternal);
       ticker2.attach_ms(500, tickExternal, MAIN_MODE_OFFLINE);
-      Serial.println("Failed to initialize the device using the server");
+      Serial.println("Не могу инициализировать устройство в БольшоеАпи.ру");
       Serial.println(httpCode);
       delay(15000);
       ESP.restart();
@@ -46,9 +46,9 @@ bool getDeviceConfiguration(bool first) {
     return false;
   }
 
-  String json = http.getString();
+  String jsonRes = http.getString();
   JsonDocument doc;
-  deserializeJson(doc, json);
+  deserializeJson(doc, jsonRes);
   http.end();
 
   int serverTime = doc["time"].as<int>();
@@ -56,7 +56,7 @@ bool getDeviceConfiguration(bool first) {
 
   struct timeval tv;
   tv.tv_sec = serverTime;
-  settimeofday(&tv, NULL); // Применяем время сервера, как локальное
+  settimeofday(&tv, NULL); // Применяем время сервера, как локальное, так как у нас нет RTC
 
   if (TOKEN != doc["token"].as<String>()) {
     TOKEN = doc["token"].as<String>();
@@ -134,6 +134,14 @@ String getValue(String data, char separator, int index) {
 }
 
 // // //
+
+float DecimalRound(float input, int decimals)
+{
+  float scale=pow(10, decimals);
+  return round(input * scale) / scale;
+}
+
+//////
 
 void setLedLen(int distance, int targetDistance) {
   if (distance > targetDistance) {
