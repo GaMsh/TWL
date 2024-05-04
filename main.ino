@@ -30,7 +30,7 @@ void loop() {
       sendDataToServer(json);
     }
   }
-  
+
   if (WiFi.status() == WL_CONNECTED) {
     analogWrite(LED_EXTERNAL, LED_BRIGHT);
   } else {
@@ -54,16 +54,17 @@ void loop() {
 
       String json = http.getString();
       Serial.println(json);
-      JsonDocument doc;
-      deserializeJson(doc, json);
+      JsonDocument jsonData;
+      deserializeJson(jsonData, json);
       display.clearDisplay();
       display.setTextSize(2);
       display.setTextColor(SSD1306_WHITE);
       display.setCursor(0, 0);
       display.println(MONITOR_NAME);
-      display.println(doc["data"][0].as<String>());
-      display.println(doc["data"][1].as<String>());
-      display.println(doc["data"][2].as<String>());
+      display.println(jsonData["data"][0].as<String>());
+      display.println(jsonData["data"][1].as<String>());
+      display.println(jsonData["data"][2].as<String>());
+//       display.print(jsonData["data"]["summary"]["paramsRaw"]["T:"].as<float>());
       display.display();
     }
 
@@ -90,18 +91,18 @@ void loop() {
     }
 
     String json = http.getString();
-    JsonDocument doc;
-    deserializeJson(doc, json);
+    JsonDocument jsonData;
+    deserializeJson(jsonData, json);
     http.end();
 
-    String state1 = doc["state1"].as<String>();
-    String state2 = doc["state2"].as<String>();
-    String state3 = doc["state3"].as<String>();
-    String state4 = doc["state4"].as<String>();
-    String state5 = doc["state5"].as<String>();
-    String state6 = doc["state6"].as<String>();
-    String state7 = doc["state7"].as<String>();
-    String state8 = doc["state8"].as<String>();
+    String state1 = jsonData["state1"].as<String>();
+    String state2 = jsonData["state2"].as<String>();
+    String state3 = jsonData["state3"].as<String>();
+    String state4 = jsonData["state4"].as<String>();
+    String state5 = jsonData["state5"].as<String>();
+    String state6 = jsonData["state6"].as<String>();
+    String state7 = jsonData["state7"].as<String>();
+    String state8 = jsonData["state8"].as<String>();
 //     digitalWrite(LED_BUILTIN, !state5);
 //     digitalWrite(D0, state6);
 //     setLedLen(state7, state8);

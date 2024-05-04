@@ -17,9 +17,9 @@ JsonDocument getSensorData_BME280(int currentMillis) {
 
   JsonDocument doc;
   if (!isnan(Pressure)) {
-    doc["temperature"] = (String)DecimalRound(Temperature, 1);
-    doc["humidity"] = (String)DecimalRound(Humidity, 1);
-    doc["pressure"] = (String)DecimalRound(Pressure, 1);
+    doc["temperature"] = (String)decimalRound(Temperature, 1);
+    doc["humidity"] = (String)decimalRound(Humidity, 1);
+    doc["pressure"] = (String)decimalRound(Pressure, 1);
   }
   return doc;
 }
@@ -39,8 +39,8 @@ JsonDocument getSensorData_HTU21(int currentMillis) {
 
     JsonDocument doc;
   if (Temperature != 255 && Temperature != 998 && Temperature != 999) {
-    doc["temperature"] = (String)DecimalRound(Temperature, 1);
-    doc["humidity"] = (String)DecimalRound(Humidity, 1);
+    doc["temperature"] = (String)decimalRound(Temperature, 1);
+    doc["humidity"] = (String)decimalRound(Humidity, 1);
   }
   return doc;
 }
@@ -61,8 +61,8 @@ JsonDocument getSensorData_SHT31(int currentMillis) {
 
   JsonDocument doc;
   if (Temperature != 255 && Temperature != 998 && Temperature != 999 && Humidity != 0) {
-    doc["temperature"] = (String)DecimalRound(Temperature, 1);
-    doc["humidity"] = (String)DecimalRound(Humidity, 1);
+    doc["temperature"] = (String)decimalRound(Temperature, 1);
+    doc["humidity"] = (String)decimalRound(Humidity, 1);
   }
   return doc;
 }

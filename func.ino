@@ -8,23 +8,23 @@ bool getDeviceConfiguration(bool first) {
   http.setTimeout(6000);
   http.addHeader("Content-Type", "application/json");
 
-  JsonDocument docReq;
-  docReq["mac"] = String(WiFi.macAddress());
-  docReq["deviceId"] = getSensorID();
-  docReq["token"] = TOKEN;
-  docReq["revision"] = String(DEVICE_REVISION);
-  docReq["model"] = String(DEVICE_MODEL);
-  docReq["firmware"] = String(DEVICE_FIRMWARE);
-  docReq["ip"] = WiFi.localIP().toString();
-  docReq["ssid"] = String(WiFi.SSID());
-  docReq["rssi"] = String(ESP.getVcc());
-  docReq["noAutoUpdate"] = NO_AUTO_UPDATE;
-  docReq["chipTest"] = CHIP_TEST;
+  JsonDocument jsonRequestData;
+  jsonRequestData["mac"] = String(WiFi.macAddress());
+  jsonRequestData["deviceId"] = getSensorID();
+  jsonRequestData["token"] = TOKEN;
+  jsonRequestData["revision"] = String(DEVICE_REVISION);
+  jsonRequestData["model"] = String(DEVICE_MODEL);
+  jsonRequestData["firmware"] = String(DEVICE_FIRMWARE);
+  jsonRequestData["ip"] = WiFi.localIP().toString();
+  jsonRequestData["ssid"] = String(WiFi.SSID());
+  jsonRequestData["rssi"] = String(ESP.getVcc());
+  jsonRequestData["noAutoUpdate"] = NO_AUTO_UPDATE;
+  jsonRequestData["chipTest"] = CHIP_TEST;
 
-  String jsonReq;
-  serializeJson(docReq, jsonReq);
+  String jsonRequest;
+  serializeJson(jsonRequestData, jsonRequest);
 
-  int httpCode = http.POST(jsonReq);
+  int httpCode = http.POST(jsonRequest);
   if (!first && httpCode < 0) {
     NO_SERVER = true;
     return false;
@@ -46,67 +46,67 @@ bool getDeviceConfiguration(bool first) {
     return false;
   }
 
-  String jsonRes = http.getString();
-  JsonDocument doc;
-  deserializeJson(doc, jsonRes);
+  String jsonResponse = http.getString();
+  JsonDocument jsonResponseData;
+  deserializeJson(jsonResponseData, jsonResponse);
   http.end();
 
-  int serverTime = doc["time"].as<int>();
+  int serverTime = jsonResponseData["time"].as<int>();
   Serial.println(serverTime);
 
   struct timeval tv;
   tv.tv_sec = serverTime;
   settimeofday(&tv, NULL); // Применяем время сервера, как локальное, так как у нас нет RTC
 
-  if (TOKEN != doc["token"].as<String>()) {
-    TOKEN = doc["token"].as<String>();
+  if (TOKEN != jsonResponseData["token"].as<String>()) {
+    TOKEN = jsonResponseData["token"].as<String>();
     writeCfgFile("token", TOKEN);
     Serial.println("Device token was updated in store");
   }
 
-  if (doc["state1"]) {
-    int LED_BRIGHT_NEW = doc["state1"].as<int>();
+  if (jsonResponseData["state1"]) {
+    int LED_BRIGHT_NEW = jsonResponseData["state1"].as<int>();
     if (LED_BRIGHT != LED_BRIGHT_NEW) {
       LED_BRIGHT = LED_BRIGHT_NEW;
-      writeCfgFile("led_bright", doc["state1"].as<String>());
+      writeCfgFile("led_bright", jsonResponseData["state1"].as<String>());
       Serial.println("Led brightness was updated in store: " + LED_BRIGHT);
     }
   }
 
-  if (doc["state2"]) {
-    String MONITOR_SLUG_NEW = doc["state2"].as<String>();
+  if (jsonResponseData["state2"]) {
+    String MONITOR_SLUG_NEW = jsonResponseData["state2"].as<String>();
     if (MONITOR_SLUG != MONITOR_SLUG_NEW) {
       MONITOR_SLUG = MONITOR_SLUG_NEW;
-      writeCfgFile("monitor_slug", doc["state2"].as<String>());
+      writeCfgFile("monitor_slug", jsonResponseData["state2"].as<String>());
       Serial.println("Monitor id was updated in store: " + MONITOR_SLUG);
     }
   }
 
-  if (doc["state3"]) {
-    int MONITOR_INTERVAL_NEW = doc["state3"].as<int>();
+  if (jsonResponseData["state3"]) {
+    int MONITOR_INTERVAL_NEW = jsonResponseData["state3"].as<int>();
     if (MONITOR_INTERVAL != MONITOR_INTERVAL_NEW) {
       MONITOR_INTERVAL = MONITOR_INTERVAL_NEW;
-      writeCfgFile("monitor_interval", doc["state3"].as<String>());
+      writeCfgFile("monitor_interval", jsonResponseData["state3"].as<String>());
       Serial.println("Monitor interval was updated in store: " + MONITOR_INTERVAL);
     }
   }
 
-  if (doc["state4"]) {
-    String MONITOR_NAME_NEW = doc["state4"].as<String>();
+  if (jsonResponseData["state4"]) {
+    String MONITOR_NAME_NEW = jsonResponseData["state4"].as<String>();
     if (MONITOR_NAME != MONITOR_NAME_NEW) {
       MONITOR_NAME = MONITOR_NAME_NEW;
-      writeCfgFile("monitor_name", doc["state4"].as<String>());
+      writeCfgFile("monitor_name", jsonResponseData["state4"].as<String>());
       Serial.println("Monitor name was updated in store: " + MONITOR_NAME);
     }
   }
 
-//  if (doc["state5"].as<int>()) {
-//Serial.println(doc["state5"].as<String>());
-//if (doc["state5"].as<String>() != "null") {
-//    int SENS_INTERVAL_NEW = doc["state5"].as<int>();
+//  if (jsonResponseData["state5"].as<int>()) {
+//Serial.println(jsonResponseData["state5"].as<String>());
+//if (jsonResponseData["state5"].as<String>() != "null") {
+//    int SENS_INTERVAL_NEW = jsonResponseData["state5"].as<int>();
 //    if (SENS_INTERVAL != SENS_INTERVAL_NEW) {
 //      SENS_INTERVAL = SENS_INTERVAL_NEW;
-//      writeCfgFile("sensor_interval", doc["state5"].as<String>());
+//      writeCfgFile("sensor_interval", jsonResponseData["state5"].as<String>());
 //      Serial.println("Sensor interval was updated in store: " + SENS_INTERVAL);
 //    }
 //}
@@ -135,7 +135,7 @@ String getValue(String data, char separator, int index) {
 
 // // //
 
-float DecimalRound(float input, int decimals)
+float decimalRound(float input, int decimals)
 {
   float scale=pow(10, decimals);
   return round(input * scale) / scale;
