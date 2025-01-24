@@ -64,7 +64,6 @@ void loop() {
       display.println(jsonData["data"][0].as<String>());
       display.println(jsonData["data"][1].as<String>());
       display.println(jsonData["data"][2].as<String>());
-//       display.print(jsonData["data"]["summary"]["paramsRaw"]["T:"].as<float>());
       display.display();
     }
 

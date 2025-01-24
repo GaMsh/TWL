@@ -1,10 +1,10 @@
 #include <ESP8266WiFi.h>          // https://github.com/esp8266/Arduino (3.1.2)
 #include <ESP8266HTTPClient.h>    // https://github.com/esp8266/Arduino
 #include <ESP8266httpUpdate.h>    // https://github.com/esp8266/Arduino
-#include <WiFiUdp.h>              // https://github.com/esp8266/Arduino
+//#include <WiFiUdp.h>              // https://github.com/esp8266/Arduino
 
 // для работы локального хранилища
-#include <LittleFS.h>             // https://github.com/esp8266/Arduino
+//#include <LittleFS.h>             // https://github.com/esp8266/Arduino
 
 // работа с json
 #include <ArduinoJson.h>          // https://github.com/bblanchon/ArduinoJson
@@ -26,10 +26,10 @@
 #include <Ticker.h>               // https://github.com/esp8266/Arduino
 
 // для работы со светодиодными матрицами
-#include <GyverMAX7219.h>
-#define AM_W 32  // 4 матрицы (32 точки)
-#define AM_H 8  // 1 матрицы (8 точек)
-MAX7219 <4, 1, D3> mtrx;
+//#include <GyverMAX7219.h>
+//#define AM_W 32  // 4 матрицы (32 точки)
+//#define AM_H 8  // 1 матрицы (8 точек)
+//MAX7219 <4, 1, D3> mtrx;
 //
 
 // для работы экранчика ssd1306
@@ -94,7 +94,7 @@ int MODE_RESET_WIFI = 0; // флаг означающий, что пользов
 const char *DEVICE_MODEL = "БольшоеАпи.ру";
 const char *DEVICE_REVISION = "Самый Честный Прогноз";
 const char *DEVICE_MODEL_SYS = "TWL";
-const char *DEVICE_FIRMWARE = "6.0.0";
+const char *DEVICE_FIRMWARE = "6.1.2";
 
 const int RESET_WIFI = 0; // D3 - пин сброса wifi
 const int LED_EXTERNAL = 14; // D5 - пин внешнего светодиода
@@ -110,8 +110,6 @@ unsigned long previousMillisReport = 0;
 
 String deviceName = String(DEVICE_MODEL_SYS) + "_" + String(DEVICE_FIRMWARE);
 String TOKEN = "";
-
-int bytesWriten = 0;
 
 void configModeCallback(WiFiManager *myWiFiManager) {
     Serial.println("Entered config mode");

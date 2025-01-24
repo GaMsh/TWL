@@ -35,16 +35,16 @@ void setup() {
 
     checkFirmwareUpdate(false);
 
-    if (LittleFS.begin()) {
-      Serial.println(F("LittleFS was mounted"));
-    } else {
-      Serial.println(F("Error while mounting LittleFS"));
-    }
+//     if (LittleFS.begin()) {
+//       Serial.println(F("LittleFS was mounted"));
+//     } else {
+//       Serial.println(F("Error while mounting LittleFS"));
+//     }
 
-    int customLedBright = readCfgFile("led_bright").toInt();
-    if (customLedBright > 0) {
-      LED_BRIGHT = customLedBright;
-    }
+//     int customLedBright = readCfgFile("led_bright").toInt();
+//     if (customLedBright > 0) {
+//       LED_BRIGHT = customLedBright;
+//     }
 
     ///// Final
     TOKEN = readCfgFile("token");

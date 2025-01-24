@@ -291,6 +291,7 @@ boolean WiFiManager::startConfigPortal(char const *apName, char const *apPasswor
 
 
 int WiFiManager::connectWifi(String ssid, String pass) {
+  print pass;
   DEBUG_WM(F("Connecting as wifi client..."));
 
   // check if we've got static_ip settings, if we do, use those.
