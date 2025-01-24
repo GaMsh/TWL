@@ -71,39 +71,6 @@ bool setupWiFiManager() {
   return false;
 }
 
-String readCfgFile(String configVar) {
-//   String result = "";
-//
-//   File file = LittleFS.open("/" + configVar + ".cfg", "r");
-//   if (file) {
-//     result = file.readString();
-//     Serial.print(configVar + ": ");
-//     Serial.println(result);
-//     file.close();
-//   } else {
-//       Serial.println("Problem read " + configVar + ".cfg");
-//   }
-//
-   return configVar;
+String getSensorID() {
+    return String(ESP.getChipId());
 }
-
-int writeCfgFile(String configVar, String value) {
-//   File file = LittleFS.open("/" + configVar + ".cfg", "w");
-//   if (file) {
-//     Serial.println("Write file " + configVar + ".cfg");
-//     bytesWriten = file.print(value);
-//     if (bytesWriten > 0) {
-//       Serial.print("File was written: ");
-//       Serial.println(bytesWriten);
-//       return bytesWriten;
-//     } else {
-//       Serial.println("File write failed");
-//       return 0;
-//     }
-//     file.close();
-//   }
-//
-   return -1;
-}
-
-String getSensorID() { return String(ESP.getChipId()); }

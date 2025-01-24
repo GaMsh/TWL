@@ -58,59 +58,29 @@ bool getDeviceConfiguration(bool first) {
   tv.tv_sec = serverTime;
   settimeofday(&tv, NULL); // Применяем время сервера, как локальное, так как у нас нет RTC
 
-//   if (TOKEN != jsonResponseData["token"].as<String>()) {
-    TOKEN = jsonResponseData["token"].as<String>();
-    writeCfgFile("token", TOKEN);
-    Serial.println("Device token was stored in memory");
-//   }
+  TOKEN = jsonResponseData["token"].as<String>();
+  Serial.println("Device token was stored in memory");
 
   if (jsonResponseData["state1"]) {
-//     int LED_BRIGHT_NEW = jsonResponseData["state1"].as<int>();
-//     if (LED_BRIGHT != LED_BRIGHT_NEW) {
       LED_BRIGHT = jsonResponseData["state1"].as<int>();
-      writeCfgFile("led_bright", jsonResponseData["state1"].as<String>());
       Serial.println("Led brightness was stored in memory: " + LED_BRIGHT);
-//     }
   }
 
   if (jsonResponseData["state2"]) {
-//     String MONITOR_SLUG_NEW = jsonResponseData["state2"].as<String>();
-//     if (MONITOR_SLUG != MONITOR_SLUG_NEW) {
       MONITOR_SLUG = jsonResponseData["state2"].as<String>();
-      writeCfgFile("monitor_slug", jsonResponseData["state2"].as<String>());
       Serial.println("Monitor id was stored in memory: " + MONITOR_SLUG);
-//     }
   }
 
   if (jsonResponseData["state3"]) {
-//     int MONITOR_INTERVAL_NEW = jsonResponseData["state3"].as<int>();
-//     if (MONITOR_INTERVAL != MONITOR_INTERVAL_NEW) {
       MONITOR_INTERVAL = jsonResponseData["state3"].as<int>();
-      writeCfgFile("monitor_interval", jsonResponseData["state3"].as<String>());
       Serial.println("Monitor interval was stored in memory: " + MONITOR_INTERVAL);
-//     }
   }
 
   if (jsonResponseData["state4"]) {
-//     String MONITOR_NAME_NEW = jsonResponseData["state4"].as<String>();
-//     if (MONITOR_NAME != MONITOR_NAME_NEW) {
       MONITOR_NAME = jsonResponseData["state4"].as<String>();
-      writeCfgFile("monitor_name", jsonResponseData["state4"].as<String>());
       Serial.println("Monitor name was stored in memory: " + MONITOR_NAME);
-//     }
   }
 
-//  if (jsonResponseData["state5"].as<int>()) {
-//Serial.println(jsonResponseData["state5"].as<String>());
-//if (jsonResponseData["state5"].as<String>() != "null") {
-//    int SENS_INTERVAL_NEW = jsonResponseData["state5"].as<int>();
-//    if (SENS_INTERVAL != SENS_INTERVAL_NEW) {
-//      SENS_INTERVAL = SENS_INTERVAL_NEW;
-//      writeCfgFile("sensor_interval", jsonResponseData["state5"].as<String>());
-//      Serial.println("Sensor interval was updated in store: " + SENS_INTERVAL);
-//    }
-//}
-//  }
   return true;
 }
 

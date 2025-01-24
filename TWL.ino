@@ -3,9 +3,6 @@
 #include <ESP8266httpUpdate.h>    // https://github.com/esp8266/Arduino
 //#include <WiFiUdp.h>              // https://github.com/esp8266/Arduino
 
-// для работы локального хранилища
-//#include <LittleFS.h>             // https://github.com/esp8266/Arduino
-
 // работа с json
 #include <ArduinoJson.h>          // https://github.com/bblanchon/ArduinoJson
 
@@ -91,10 +88,10 @@ boolean NO_SERVER = true; // флаг состояния, поднимается
 
 int MODE_RESET_WIFI = 0; // флаг означающий, что пользователем инициирован процесс очистки настроек WiFi
 
-const char *DEVICE_MODEL = "БольшоеАпи.ру";
-const char *DEVICE_REVISION = "Самый Честный Прогноз";
+const char *DEVICE_MODEL = "VeloCliMat";
+const char *DEVICE_REVISION = "second";
 const char *DEVICE_MODEL_SYS = "TWL";
-const char *DEVICE_FIRMWARE = "6.1.2";
+const char *DEVICE_FIRMWARE = "6.2";
 
 const int RESET_WIFI = 0; // D3 - пин сброса wifi
 const int LED_EXTERNAL = 14; // D5 - пин внешнего светодиода
